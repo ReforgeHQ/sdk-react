@@ -1,47 +1,47 @@
 import React from "react";
-import { Prefab } from "@prefab-cloud/prefab-cloud-js";
-import { usePrefabTypesafe, createPrefabHook } from "../index";
+import { Prefab as Reforge } from "@prefab-cloud/prefab-cloud-js";
+import { useReforgeTypesafe, createReforgeHook } from "../index";
 
 // Simple TypesafeClass for testing
 export class AppConfig {
-  private prefab: Prefab;
+  private reforge: Reforge;
 
-  constructor(prefab: Prefab) {
-    this.prefab = prefab;
+  constructor(reforge: Reforge) {
+    this.reforge = reforge;
   }
 
   get myCoolFeature(): boolean {
-    return this.prefab.isEnabled("my.cool.feature");
+    return this.reforge.isEnabled("my.cool.feature");
   }
 
   get appName(): string {
-    const name = this.prefab.get("app.name");
+    const name = this.reforge.get("app.name");
     return typeof name === "string" ? name : "Default App";
   }
 
   get apiUrl(): string {
-    const url = this.prefab.get("api.url");
+    const url = this.reforge.get("api.url");
     return typeof url === "string" ? url : "https://api.default.com";
   }
 
   get themeColor(): string {
-    const color = this.prefab.get("theme.color");
+    const color = this.reforge.get("theme.color");
     return typeof color === "string" ? color : "#000000";
   }
 
   calculateTimeout(multiplier: number): number {
-    const baseValue = this.prefab.get("timeout.base");
+    const baseValue = this.reforge.get("timeout.base");
     const base = typeof baseValue === "number" ? baseValue : 1000;
     return base * multiplier;
   }
 }
 
 // Create a typed hook for our test class
-export const useAppConfig = createPrefabHook(AppConfig);
+export const useAppConfig = createReforgeHook(AppConfig);
 
 // Component using the TypesafeClass
 export function TypesafeComponent() {
-  const { myCoolFeature, appName, themeColor, loading } = usePrefabTypesafe<AppConfig>();
+  const { myCoolFeature, appName, themeColor, loading } = useReforgeTypesafe<AppConfig>();
 
   if (loading) {
     return <div>Loading...</div>;

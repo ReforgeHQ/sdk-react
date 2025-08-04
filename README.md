@@ -1,10 +1,10 @@
-# prefab-cloud-react
+# @reforge-com/sdk-react
 
-A React provider and hook for [Prefab]
+A React provider and hook for [Reforge]
 
 ## Installation
 
-`npm install @prefab-cloud/prefab-cloud-react` or `yarn add @prefab-cloud/prefab-cloud-react`
+`npm install @reforge-com/sdk-react` or `yarn add @reforge-com/sdk-react`
 
 TypeScript types are included with the package.
 
@@ -12,10 +12,10 @@ TypeScript types are included with the package.
 
 ### Configure the Provider
 
-Wrap your component tree in the `PrefabProvider`, e.g.
+Wrap your component tree in the `ReforgeProvider`, e.g.
 
 ```javascript
-import { PrefabProvider } from "@prefab-cloud/prefab-cloud-react";
+import { ReforgeProvider } from "@reforge-com/sdk-react";
 
 const WrappedApp = () => {
   const context = {
@@ -28,9 +28,9 @@ const WrappedApp = () => {
   };
 
   return (
-    <PrefabProvider apiKey={"YOUR_API_KEY"} contextAttributes={context} onError={onError}>
+    <ReforgeProvider apiKey={"YOUR_API_KEY"} contextAttributes={context} onError={onError}>
       <App />
-    </PrefabProvider>
+    </ReforgeProvider>
   );
 };
 ```
@@ -39,20 +39,20 @@ Here's an explanation of each provider prop:
 
 | property            | required | type                | purpose                                                                       |
 | ------------------- | -------- | ------------------- | ----------------------------------------------------------------------------- |
-| `apiKey`            | yes      | `string`            | your Prefab API key                                                           |
-| `onError`           | no       | `(error) => void`   | callback invoked if prefab fails to initialize                                |
+| `apiKey`            | yes      | `string`            | your Reforge API key                                                          |
+| `onError`           | no       | `(error) => void`   | callback invoked if reforge fails to initialize                               |
 | `contextAttributes` | no       | `ContextAttributes` | this is the context attributes object you passed when setting up the provider |
-| `endpoints`         | no       | `string[]`          | CDN endpoints to load configuration from (defaults to 2 prefab-based CDNs)    |
+| `endpoints`         | no       | `string[]`          | CDN endpoints to load configuration from (defaults to 2 reforge-based CDNs)   |
 | `timeout`           | no       | `number`            | initialization timeout (defaults to 10 seconds)                               |
-| `pollInterval`      | no       | `number`            | configures prefab to poll for updates every `pollInterval` ms.                |
+| `pollInterval`      | no       | `number`            | configures reforge to poll for updates every `pollInterval` ms.               |
 
 ### Usage in Your Components
 
-Use the `usePrefab` hook to fetch flags and config values:
+Use the `useReforge` hook to fetch flags and config values:
 
 ```javascript
 const Logo = () => {
-  const { isEnabled } = usePrefab();
+  const { isEnabled } = useReforge();
 
   if (isEnabled("new-logo")) {
     return <img src={newLogo} className="App-logo" alt="logo" />;
@@ -62,10 +62,10 @@ const Logo = () => {
 };
 ```
 
-`usePrefab` exposes the following:
+`useReforge` exposes the following:
 
 ```javascript
-const { isEnabled, get, loading, contextAttributes } = usePrefab();
+const { isEnabled, get, loading, contextAttributes } = useReforge();
 ```
 
 Here's an explanation of each property:
@@ -74,21 +74,21 @@ Here's an explanation of each property:
 | ------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
 | `isEnabled`         | `isEnabled("new-logo")` | returns a boolean (default `false`) if a feature is enabled based on the current context |
 | `get`               | `get('retry-count')`    | returns the value of a flag or config                                                    |
-| `loading`           | `if (loading) { ... }`  | a boolean indicating whether prefab content is being loaded                              |
+| `loading`           | `if (loading) { ... }`  | a boolean indicating whether reforge content is being loaded                             |
 | `contextAttributes` | N/A                     | this is the context attributes object you passed when setting up the provider            |
-| `prefab`            | N/A                     | the underlying JavaScript prefab instance                                                |
+| `reforge`           | N/A                     | the underlying JavaScript reforge instance                                               |
 | `keys`              | N/A                     | an array of all the flag and config names in the current configuration                   |
 
 ## Usage in your test suite
 
-Wrap the component under test in a `PrefabTestProvider` and provide a config object to set up your
+Wrap the component under test in a `ReforgeTestProvider` and provide a config object to set up your
 test state.
 
 e.g. if you wanted to test the following trivial component
 
 ```javascript
 function MyComponent() {
-  const { get, isEnabled, loading } = usePrefab();
+  const { get, isEnabled, loading } = useReforge();
   const greeting = get("greeting") || "Greetings";
 
   if (loading) {
@@ -111,13 +111,13 @@ function MyComponent() {
 You could do the following in [jest]/[rtl]
 
 ```javascript
-import { PrefabTestProvider } from '@prefab-cloud/prefab-cloud-react';
+import { ReforgeTestProvider } from '@reforge-com/sdk-react';
 
 const renderInTestProvider = (config: {[key: string]: any}) => {
   render(
-    <PrefabTestProvider config={config}>
+    <ReforgeTestProvider config={config}>
       <MyComponent />
-    </PrefabTestProvider>,
+    </ReforgeTestProvider>,
   );
 };
 
@@ -185,5 +185,5 @@ This script:
 To install the pre-release version:
 
 ```bash
-npm install @prefab-cloud/prefab-cloud-react@pre
+npm install @reforge-com/sdk-react@pre
 ```

@@ -1,41 +1,41 @@
 import React, { PropsWithChildren } from "react";
 import {
-  PrefabContext,
-  assignPrefabClient,
+  ReforgeContext,
+  assignReforgeClient,
   ProvidedContext,
-  PrefabTypesafeClass,
+  ReforgeTypesafeClass,
   extractTypesafeMethods,
-} from "./PrefabProvider";
+} from "./ReforgeProvider";
 
 export type TestProps = {
   config: Record<string, any>;
   apiKey?: string;
 };
 
-function PrefabTestProvider<T = any>({
+function ReforgeTestProvider<T = any>({
   apiKey,
   config,
   children,
-  PrefabTypesafeClass: TypesafeClass,
-}: PropsWithChildren<TestProps & { PrefabTypesafeClass?: PrefabTypesafeClass<T> }>) {
+  ReforgeTypesafeClass: TypesafeClass,
+}: PropsWithChildren<TestProps & { ReforgeTypesafeClass?: ReforgeTypesafeClass<T> }>) {
   const get = (key: string) => config[key];
   const getDuration = (key: string) => config[key];
   const isEnabled = (key: string) => !!get(key);
 
-  const prefabClient = React.useMemo(() => assignPrefabClient(), []);
+  const reforgeClient = React.useMemo(() => assignReforgeClient(), []);
 
   // Memoize typesafe instance separately
   const typesafeInstance = React.useMemo(() => {
-    if (TypesafeClass && prefabClient) {
-      return new TypesafeClass(prefabClient);
+    if (TypesafeClass && reforgeClient) {
+      return new TypesafeClass(reforgeClient);
     }
     return null;
-  }, [TypesafeClass, prefabClient]);
+  }, [TypesafeClass, reforgeClient]);
 
   const value = React.useMemo(() => {
-    prefabClient.get = get;
-    prefabClient.getDuration = getDuration;
-    prefabClient.isEnabled = isEnabled;
+    reforgeClient.get = get;
+    reforgeClient.getDuration = getDuration;
+    reforgeClient.isEnabled = isEnabled;
 
     const baseContext: ProvidedContext = {
       isEnabled,
@@ -43,7 +43,7 @@ function PrefabTestProvider<T = any>({
       get,
       getDuration,
       loading: false,
-      prefab: prefabClient,
+      reforge: reforgeClient,
       keys: Object.keys(config),
       settings: { apiKey: apiKey ?? "fake-api-key-via-the-test-provider" },
     };
@@ -54,9 +54,9 @@ function PrefabTestProvider<T = any>({
     }
 
     return baseContext;
-  }, [config, prefabClient, typesafeInstance, apiKey]);
+  }, [config, reforgeClient, typesafeInstance, apiKey]);
 
-  return <PrefabContext.Provider value={value}>{children}</PrefabContext.Provider>;
+  return <ReforgeContext.Provider value={value}>{children}</ReforgeContext.Provider>;
 }
 
-export { PrefabTestProvider };
+export { ReforgeTestProvider };

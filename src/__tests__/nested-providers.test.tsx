@@ -1,12 +1,12 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import { render, screen } from "@testing-library/react";
-import { Context as PrefabContext } from "@prefab-cloud/prefab-cloud-js";
+import { Context as ReforgeContext } from "@prefab-cloud/prefab-cloud-js";
 import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
 import {
-  prefab as globalPrefab,
-  PrefabProvider,
-  usePrefab,
+  reforge as globalReforge,
+  ReforgeProvider,
+  useReforge,
   ContextAttributes,
   SharedSettings,
 } from "../index";
@@ -18,7 +18,7 @@ const onError = console.error;
 const apiKey = "nested-providers-test-api-key";
 
 function InnerUserComponent() {
-  const { isEnabled, loading, prefab, settings } = usePrefab();
+  const { isEnabled, loading, reforge, settings } = useReforge();
 
   if (loading) {
     return <div>Loading inner component...</div>;
@@ -27,10 +27,10 @@ function InnerUserComponent() {
   return (
     <div
       data-testid="inner-wrapper"
-      data-prefab-instance-hash={prefab.instanceHash}
-      data-prefab-settings={JSON.stringify(settings)}
+      data-reforge-instance-hash={reforge.instanceHash}
+      data-reforge-settings={JSON.stringify(settings)}
     >
-      <h1 data-testid="inner-greeting">{prefab.get("greeting")?.toString() ?? "Default"}</h1>
+      <h1 data-testid="inner-greeting">{reforge.get("greeting")?.toString() ?? "Default"}</h1>
       {isEnabled("secretFeature") && (
         <button data-testid="inner-secret-feature" type="submit" title="secret-feature">
           Secret feature
@@ -49,7 +49,7 @@ function OuterUserComponent({
   innerUserContext: ContextAttributes;
   innerProviderSettings: SharedSettings;
 }) {
-  const { get, isEnabled, loading, prefab, settings: parentProviderSettings } = usePrefab();
+  const { get, isEnabled, loading, reforge, settings: parentProviderSettings } = useReforge();
 
   let innerSettings = innerProviderSettings;
   if (Object.keys(innerProviderSettings).length === 0) {
@@ -64,8 +64,8 @@ function OuterUserComponent({
   return (
     <div
       data-testid="outer-wrapper"
-      data-prefab-instance-hash={prefab.instanceHash}
-      data-prefab-settings={JSON.stringify(parentProviderSettings)}
+      data-reforge-instance-hash={reforge.instanceHash}
+      data-reforge-settings={JSON.stringify(parentProviderSettings)}
     >
       <h1 data-testid="outer-greeting">{get("greeting") ?? "Default"}</h1>
       {isEnabled("secretFeature") && (
@@ -77,9 +77,9 @@ function OuterUserComponent({
       <div>
         <h1>You are looking at {admin.name}</h1>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <PrefabProvider {...innerSettings} contextAttributes={innerUserContext}>
+        <ReforgeProvider {...innerSettings} contextAttributes={innerUserContext}>
           <InnerUserComponent />
-        </PrefabProvider>
+        </ReforgeProvider>
       </div>
     </div>
   );
@@ -94,7 +94,7 @@ function App({
   innerProviderSettings?: SharedSettings;
 }) {
   return (
-    <PrefabProvider
+    <ReforgeProvider
       apiKey={apiKey}
       contextAttributes={outerUserContext}
       onError={onError}
@@ -106,11 +106,11 @@ function App({
         innerUserContext={innerUserContext}
         innerProviderSettings={innerProviderSettings || {}}
       />
-    </PrefabProvider>
+    </ReforgeProvider>
   );
 }
 
-it("allows nested `PrefabProvider`s that reuse the parent provider's settings", async () => {
+it("allows nested `ReforgeProvider`s that reuse the parent provider's settings", async () => {
   const outerUserContext = {
     user: { email: "dr.smith@example.com", doctor: true },
     outerOnly: { city: "NYC" },
@@ -131,7 +131,7 @@ it("allows nested `PrefabProvider`s that reuse the parent provider's settings", 
   };
 
   fetchMock.mockResponse((req) => {
-    if (req.url.includes(new PrefabContext(outerUserContext).encode())) {
+    if (req.url.includes(new ReforgeContext(outerUserContext).encode())) {
       return Promise.resolve({
         body: JSON.stringify(outerUserFetchData),
         status: 200,
@@ -155,19 +155,19 @@ it("allows nested `PrefabProvider`s that reuse the parent provider's settings", 
   expect(screen.queryByTestId("outer-secret-feature")).toBeInTheDocument();
   expect(screen.queryByTestId("inner-secret-feature")).not.toBeInTheDocument();
 
-  // Verify that each provider has its own copy of Prefab
-  const outerPrefabWrapper = screen.getByTestId("outer-wrapper");
-  const innerPrefabWrapper = screen.getByTestId("inner-wrapper");
+  // Verify that each provider has its own copy of Reforge
+  const outerReforgeWrapper = screen.getByTestId("outer-wrapper");
+  const innerReforgeWrapper = screen.getByTestId("inner-wrapper");
 
-  const outerPrefabInstanceHash = outerPrefabWrapper.getAttribute("data-prefab-instance-hash");
-  const innerPrefabInstanceHash = innerPrefabWrapper.getAttribute("data-prefab-instance-hash");
+  const outerReforgeInstanceHash = outerReforgeWrapper.getAttribute("data-reforge-instance-hash");
+  const innerReforgeInstanceHash = innerReforgeWrapper.getAttribute("data-reforge-instance-hash");
 
-  expect(outerPrefabInstanceHash).toHaveLength(36);
-  expect(innerPrefabInstanceHash).toHaveLength(36);
-  expect(outerPrefabInstanceHash).not.toEqual(innerPrefabInstanceHash);
-  expect(outerPrefabInstanceHash).toEqual(globalPrefab.instanceHash);
+  expect(outerReforgeInstanceHash).toHaveLength(36);
+  expect(innerReforgeInstanceHash).toHaveLength(36);
+  expect(outerReforgeInstanceHash).not.toEqual(innerReforgeInstanceHash);
+  expect(outerReforgeInstanceHash).toEqual(globalReforge.instanceHash);
 
-  expect(outerPrefabWrapper.getAttribute("data-prefab-settings")).toStrictEqual(
+  expect(outerReforgeWrapper.getAttribute("data-reforge-settings")).toStrictEqual(
     JSON.stringify({
       apiKey,
       collectEvaluationSummaries: false,
@@ -176,7 +176,7 @@ it("allows nested `PrefabProvider`s that reuse the parent provider's settings", 
   );
 
   // These are all inherited
-  expect(innerPrefabWrapper.getAttribute("data-prefab-settings")).toStrictEqual(
+  expect(innerReforgeWrapper.getAttribute("data-reforge-settings")).toStrictEqual(
     JSON.stringify({
       apiKey,
       collectEvaluationSummaries: false,
@@ -185,7 +185,7 @@ it("allows nested `PrefabProvider`s that reuse the parent provider's settings", 
   );
 });
 
-it("allows nested `PrefabProvider`s that use new settings", async () => {
+it("allows nested `ReforgeProvider`s that use new settings", async () => {
   const outerUserContext = {
     user: { email: "dr.smith@example.com", doctor: true },
     outerOnly: { city: "NYC" },
@@ -206,7 +206,7 @@ it("allows nested `PrefabProvider`s that use new settings", async () => {
   };
 
   fetchMock.mockResponse((req) => {
-    if (req.url.includes(new PrefabContext(outerUserContext).encode())) {
+    if (req.url.includes(new ReforgeContext(outerUserContext).encode())) {
       return Promise.resolve({
         body: JSON.stringify(outerUserFetchData),
         status: 200,
@@ -241,11 +241,11 @@ it("allows nested `PrefabProvider`s that use new settings", async () => {
   expect(screen.queryByTestId("outer-secret-feature")).toBeInTheDocument();
   expect(screen.queryByTestId("inner-secret-feature")).not.toBeInTheDocument();
 
-  // Verify that each provider has its own copy of Prefab
-  const outerPrefabWrapper = screen.getByTestId("outer-wrapper");
-  const innerPrefabWrapper = screen.getByTestId("inner-wrapper");
+  // Verify that each provider has its own copy of Reforge
+  const outerReforgeWrapper = screen.getByTestId("outer-wrapper");
+  const innerReforgeWrapper = screen.getByTestId("inner-wrapper");
 
-  expect(outerPrefabWrapper.getAttribute("data-prefab-settings")).toStrictEqual(
+  expect(outerReforgeWrapper.getAttribute("data-reforge-settings")).toStrictEqual(
     JSON.stringify({
       apiKey,
       collectEvaluationSummaries: false,
@@ -254,7 +254,7 @@ it("allows nested `PrefabProvider`s that use new settings", async () => {
   );
 
   // These are NOT inherited so we get what we set on the inner provider
-  expect(innerPrefabWrapper.getAttribute("data-prefab-settings")).toStrictEqual(
+  expect(innerReforgeWrapper.getAttribute("data-reforge-settings")).toStrictEqual(
     JSON.stringify({
       apiKey: "inner-api-key",
       collectLoggerNames: true,

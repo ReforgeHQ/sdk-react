@@ -1,11 +1,11 @@
 import React, { PropsWithChildren } from "react";
 import {
-  prefab,
+  prefab as reforge,
   type CollectContextModeType,
   type ConfigValue,
   Context,
   type Duration,
-  Prefab,
+  Prefab as Reforge,
 } from "@prefab-cloud/prefab-cloud-js";
 import version from "./version";
 
@@ -18,7 +18,7 @@ type ClassMethods<T> = {
   [K in keyof T]: T[K];
 };
 
-type PrefabTypesafeClass<T> = new (prefabInstance: Prefab) => T;
+type ReforgeTypesafeClass<T> = new (reforgeInstance: Reforge) => T;
 
 type SharedSettings = {
   apiKey?: string;
@@ -40,7 +40,7 @@ export type BaseContext = {
   contextAttributes: ContextAttributes;
   isEnabled: (key: string) => boolean;
   loading: boolean;
-  prefab: typeof prefab;
+  reforge: typeof reforge;
   keys: string[];
   settings: SharedSettings;
 };
@@ -54,45 +54,45 @@ export const defaultContext: BaseContext = {
   keys: [] as string[],
   loading: true,
   contextAttributes: {},
-  prefab,
+  reforge,
   settings: {},
 };
 
-export const PrefabContext = React.createContext<ProvidedContext>(
+export const ReforgeContext = React.createContext<ProvidedContext>(
   defaultContext as ProvidedContext
 );
 
-// This is a factory function that creates a fully typed usePrefab hook for a specific PrefabTypesafe class
-export const createPrefabHook =
-  <T,>(_typesafeClass: PrefabTypesafeClass<T>) =>
+// This is a factory function that creates a fully typed useReforge hook for a specific ReforgeTypesafe class
+export const createReforgeHook =
+  <T,>(_typesafeClass: ReforgeTypesafeClass<T>) =>
   (): ProvidedContext<T> =>
-    React.useContext(PrefabContext) as ProvidedContext<T>;
+    React.useContext(ReforgeContext) as ProvidedContext<T>;
 
 // Basic hook for general use - requires type parameter
-export const useBasePrefab = () => React.useContext(PrefabContext);
+export const useBaseReforge = () => React.useContext(ReforgeContext);
 
 // Helper hook for explicit typing
-export const usePrefabTypesafe = <T,>(): ProvidedContext<T> =>
-  useBasePrefab() as unknown as ProvidedContext<T>;
+export const useReforgeTypesafe = <T,>(): ProvidedContext<T> =>
+  useBaseReforge() as unknown as ProvidedContext<T>;
 
 // General hook that returns the context with any explicit type
-export const usePrefab = <T = any,>(): ProvidedContext<T> =>
-  useBasePrefab() as unknown as ProvidedContext<T>;
+export const useReforge = <T = any,>(): ProvidedContext<T> =>
+  useBaseReforge() as unknown as ProvidedContext<T>;
 
-let globalPrefabIsTaken = false;
+let globalReforgeIsTaken = false;
 
-export const assignPrefabClient = () => {
-  if (globalPrefabIsTaken) {
-    return new Prefab();
+export const assignReforgeClient = () => {
+  if (globalReforgeIsTaken) {
+    return new Reforge();
   }
 
-  globalPrefabIsTaken = true;
-  return prefab;
+  globalReforgeIsTaken = true;
+  return reforge;
 };
 
 export type Props<T = Record<string, unknown>> = SharedSettings & {
   contextAttributes?: ContextAttributes;
-  PrefabTypesafeClass?: PrefabTypesafeClass<T>;
+  ReforgeTypesafeClass?: ReforgeTypesafeClass<T>;
 };
 
 const getContext = (
@@ -103,7 +103,7 @@ const getContext = (
     if (Object.keys(contextAttributes).length === 0) {
       // eslint-disable-next-line no-console
       console.warn(
-        "PrefabProvider: You haven't passed any contextAttributes. See https://docs.prefab.cloud/docs/sdks/react#using-context"
+        "ReforgeProvider: You haven't passed any contextAttributes. See https://docs.prefab.cloud/docs/sdks/react#using-context"
       );
     }
 
@@ -142,7 +142,7 @@ export const extractTypesafeMethods = (instance: any): Record<string, any> => {
   return methods;
 };
 
-function PrefabProvider<T = any>({
+function ReforgeProvider<T = any>({
   apiKey,
   contextAttributes = {},
   onError = (e: unknown) => {
@@ -158,7 +158,7 @@ function PrefabProvider<T = any>({
   collectEvaluationSummaries,
   collectLoggerNames,
   collectContextMode,
-  PrefabTypesafeClass: TypesafeClass,
+  ReforgeTypesafeClass: TypesafeClass,
 }: PropsWithChildren<Props<T>>) {
   const settings = {
     apiKey,
@@ -183,7 +183,7 @@ function PrefabProvider<T = any>({
   // changes
   const [loadedContextKey, setLoadedContextKey] = React.useState("");
 
-  const prefabClient: Prefab = React.useMemo(() => assignPrefabClient(), []);
+  const reforgeClient: Reforge = React.useMemo(() => assignReforgeClient(), []);
 
   const [context, contextKey] = getContext(contextAttributes, onError);
 
@@ -198,25 +198,25 @@ function PrefabProvider<T = any>({
         mostRecentlyLoadingContextKey.current = contextKey;
 
         if (!apiKey) {
-          throw new Error("PrefabProvider: apiKey is required");
+          throw new Error("ReforgeProvider: apiKey is required");
         }
 
-        const initOptions: Parameters<typeof prefabClient.init>[0] = {
+        const initOptions: Parameters<typeof reforgeClient.init>[0] = {
           context,
           ...settings,
           apiKey, // this is in the settings object too, but passing it separately satisfies a type issue
-          clientNameString: "prefab-cloud-react",
+          clientNameString: "sdk-react",
           clientVersionString: version,
         };
 
-        prefabClient
+        reforgeClient
           .init(initOptions)
           .then(() => {
             setLoadedContextKey(contextKey);
             setLoading(false);
 
             if (pollInterval) {
-              prefabClient.poll({ frequencyInMs: pollInterval });
+              reforgeClient.poll({ frequencyInMs: pollInterval });
             }
           })
           .catch((reason: any) => {
@@ -226,7 +226,7 @@ function PrefabProvider<T = any>({
       } else {
         mostRecentlyLoadingContextKey.current = contextKey;
 
-        prefabClient
+        reforgeClient
           .updateContext(context)
           .then(() => {
             setLoadedContextKey(contextKey);
@@ -248,25 +248,25 @@ function PrefabProvider<T = any>({
     loading,
     setLoading,
     onError,
-    prefabClient.instanceHash,
+    reforgeClient.instanceHash,
   ]);
 
   // Memoize typesafe instance separately
   const typesafeInstance = React.useMemo(() => {
-    if (TypesafeClass && prefabClient) {
-      return new TypesafeClass(prefabClient);
+    if (TypesafeClass && reforgeClient) {
+      return new TypesafeClass(reforgeClient);
     }
     return null;
-  }, [TypesafeClass, prefabClient.instanceHash, loading]);
+  }, [TypesafeClass, reforgeClient.instanceHash, loading]);
 
   const value = React.useMemo(() => {
     const baseContext: ProvidedContext = {
-      isEnabled: prefabClient.isEnabled.bind(prefabClient),
+      isEnabled: reforgeClient.isEnabled.bind(reforgeClient),
       contextAttributes,
-      get: prefabClient.get.bind(prefabClient),
-      getDuration: prefabClient.getDuration.bind(prefabClient),
-      keys: Object.keys(prefabClient.configs),
-      prefab: prefabClient,
+      get: reforgeClient.get.bind(reforgeClient),
+      getDuration: reforgeClient.getDuration.bind(reforgeClient),
+      keys: Object.keys(reforgeClient.configs),
+      reforge: reforgeClient,
       loading,
       settings,
     };
@@ -277,9 +277,9 @@ function PrefabProvider<T = any>({
     }
 
     return baseContext;
-  }, [loadedContextKey, loading, prefabClient.instanceHash, settings, typesafeInstance]);
+  }, [loadedContextKey, loading, reforgeClient.instanceHash, settings, typesafeInstance]);
 
-  return <PrefabContext.Provider value={value}>{children}</PrefabContext.Provider>;
+  return <ReforgeContext.Provider value={value}>{children}</ReforgeContext.Provider>;
 }
 
-export { PrefabProvider, ConfigValue, ContextAttributes, SharedSettings, PrefabTypesafeClass };
+export { ReforgeProvider, ConfigValue, ContextAttributes, SharedSettings, ReforgeTypesafeClass };

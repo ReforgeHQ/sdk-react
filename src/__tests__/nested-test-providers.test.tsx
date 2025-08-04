@@ -2,14 +2,14 @@ import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import { act, render, screen } from "@testing-library/react";
 import {
-  prefab as globalPrefab,
-  PrefabProvider,
-  usePrefab,
-  PrefabTestProvider,
+  reforge as globalReforge,
+  ReforgeProvider,
+  useReforge,
+  ReforgeTestProvider,
   TestProps,
 } from "../index";
 
-type Provider = typeof PrefabTestProvider | typeof PrefabProvider;
+type Provider = typeof ReforgeTestProvider | typeof ReforgeProvider;
 
 type Config = { [key: string]: any };
 
@@ -27,15 +27,15 @@ const stubConfig = (config: Config) =>
   });
 
 function InnerUserComponent() {
-  const { isEnabled, loading, prefab } = usePrefab();
+  const { isEnabled, loading, reforge } = useReforge();
 
   if (loading) {
     return <div>Loading inner component...</div>;
   }
 
   return (
-    <div data-testid="inner-wrapper" data-prefab-instance-hash={prefab.instanceHash}>
-      <h1 data-testid="inner-greeting">{prefab.get("greeting")?.toString() ?? "Default"}</h1>
+    <div data-testid="inner-wrapper" data-reforge-instance-hash={reforge.instanceHash}>
+      <h1 data-testid="inner-greeting">{reforge.get("greeting")?.toString() ?? "Default"}</h1>
       {isEnabled("secretFeature") && (
         <button data-testid="inner-secret-feature" type="submit" title="secret-feature">
           Secret feature
@@ -54,14 +54,14 @@ function OuterUserComponent({
   innerTestConfig: TestProps["config"];
   InnerProvider: Provider;
 }) {
-  const { get, isEnabled, loading, prefab, settings } = usePrefab();
+  const { get, isEnabled, loading, reforge, settings } = useReforge();
 
   if (loading) {
     return <div>Loading outer component...</div>;
   }
 
   return (
-    <div data-testid="outer-wrapper" data-prefab-instance-hash={prefab.instanceHash}>
+    <div data-testid="outer-wrapper" data-reforge-instance-hash={reforge.instanceHash}>
       <h1 data-testid="outer-greeting">{get("greeting") ?? "Default"}</h1>
       {isEnabled("secretFeature") && (
         <button data-testid="outer-secret-feature" type="submit" title="secret-feature">
@@ -94,17 +94,17 @@ function App({
   InnerProvider: Provider;
 }) {
   return (
-    <PrefabTestProvider config={outerTestConfig}>
+    <ReforgeTestProvider config={outerTestConfig}>
       <OuterUserComponent
         admin={{ name: "John Doe" }}
         innerTestConfig={innerTestConfig}
         InnerProvider={InnerProvider}
       />
-    </PrefabTestProvider>
+    </ReforgeTestProvider>
   );
 }
 
-it("allows nested test `PrefabTestProvider`s", async () => {
+it("allows nested test `ReforgeTestProvider`s", async () => {
   const outerUserContext = {
     user: { email: "dr.smith@example.com", doctor: true },
     outerOnly: { city: "NYC" },
@@ -127,7 +127,7 @@ it("allows nested test `PrefabTestProvider`s", async () => {
     <App
       outerTestConfig={outerTestConfig}
       innerTestConfig={innerTestConfig}
-      InnerProvider={PrefabTestProvider}
+      InnerProvider={ReforgeTestProvider}
     />
   );
 
@@ -140,18 +140,18 @@ it("allows nested test `PrefabTestProvider`s", async () => {
   expect(screen.queryByTestId("outer-secret-feature")).toBeInTheDocument();
   expect(screen.queryByTestId("inner-secret-feature")).not.toBeInTheDocument();
 
-  // Verify that each provider has its own copy of Prefab
-  const outerPrefabInstanceHash = screen
+  // Verify that each provider has its own copy of Reforge
+  const outerReforgeInstanceHash = screen
     .getByTestId("outer-wrapper")
-    .getAttribute("data-prefab-instance-hash");
-  const innerPrefabInstanceHash = screen
+    .getAttribute("data-reforge-instance-hash");
+  const innerReforgeInstanceHash = screen
     .getByTestId("inner-wrapper")
-    .getAttribute("data-prefab-instance-hash");
+    .getAttribute("data-reforge-instance-hash");
 
-  expect(outerPrefabInstanceHash).toHaveLength(36);
-  expect(innerPrefabInstanceHash).toHaveLength(36);
-  expect(outerPrefabInstanceHash).not.toEqual(innerPrefabInstanceHash);
-  expect(outerPrefabInstanceHash).toEqual(globalPrefab.instanceHash);
+  expect(outerReforgeInstanceHash).toHaveLength(36);
+  expect(innerReforgeInstanceHash).toHaveLength(36);
+  expect(outerReforgeInstanceHash).not.toEqual(innerReforgeInstanceHash);
+  expect(outerReforgeInstanceHash).toEqual(globalReforge.instanceHash);
 });
 
 it("can nest a real provider within a test provider", async () => {
@@ -174,7 +174,7 @@ it("can nest a real provider within a test provider", async () => {
   const promise = stubConfig(innerTestConfig);
 
   render(
-    <App outerTestConfig={outerTestConfig} innerTestConfig={{}} InnerProvider={PrefabProvider} />
+    <App outerTestConfig={outerTestConfig} innerTestConfig={{}} InnerProvider={ReforgeProvider} />
   );
 
   await act(async () => {
@@ -190,15 +190,15 @@ it("can nest a real provider within a test provider", async () => {
   expect(screen.queryByTestId("outer-secret-feature")).toBeInTheDocument();
   expect(screen.queryByTestId("inner-secret-feature")).not.toBeInTheDocument();
 
-  // Verify that each provider has its own copy of Prefab
-  const outerPrefabInstanceHash = screen
+  // Verify that each provider has its own copy of Reforge
+  const outerReforgeInstanceHash = screen
     .getByTestId("outer-wrapper")
-    .getAttribute("data-prefab-instance-hash");
-  const innerPrefabInstanceHash = screen
+    .getAttribute("data-reforge-instance-hash");
+  const innerReforgeInstanceHash = screen
     .getByTestId("inner-wrapper")
-    .getAttribute("data-prefab-instance-hash");
+    .getAttribute("data-reforge-instance-hash");
 
-  expect(outerPrefabInstanceHash).toHaveLength(36);
-  expect(innerPrefabInstanceHash).toHaveLength(36);
-  expect(outerPrefabInstanceHash).not.toEqual(innerPrefabInstanceHash);
+  expect(outerReforgeInstanceHash).toHaveLength(36);
+  expect(innerReforgeInstanceHash).toHaveLength(36);
+  expect(outerReforgeInstanceHash).not.toEqual(innerReforgeInstanceHash);
 });

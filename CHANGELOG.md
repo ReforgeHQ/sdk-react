@@ -18,11 +18,11 @@ Changelog
 
 ## 0.4.1 - 2024-09-12
 
-- Update Prefab JS client to 0.4.2 (for bootstrapping)
+- Update Reforge JS client to 0.4.2 (for bootstrapping)
 
 ## 0.4.0 - 2024-08-21
 
-- Update Prefab JS client to 0.4.0 / global delivery
+- Update Reforge JS client to 0.4.0 / global delivery
 
 ## 0.3.7 - 2024-08-20
 
@@ -48,11 +48,11 @@ Changelog
 
 ## 0.3.2 - 2024-06-20
 
-- Allow nesting a PrefabProvider in a PrefabTestProvider (#48)
+- Allow nesting a ReforgeProvider in a ReforgeTestProvider (#48)
 
 ## 0.3.1 - 2024-06-13
 
-- Support for nested PrefabProviders
+- Support for nested ReforgeProviders
 
 ## 0.3.0 - 2024-06-04
 
@@ -118,33 +118,33 @@ Changelog
 
 ## 0.1.15 - 2023-07-11
 
-- Update `prefab-cloud-js` to v0.1.14
+- Update javascript package dependency to v0.1.14
 
 ## 0.1.14 - 2023-07-11
 
-- Update `prefab-cloud-js` to v0.1.13
+- Update javascript package dependency to v0.1.13
 
 ## 0.1.13 - 2023-07-10
 
-- Update `prefab-cloud-js` to v0.1.12
+- Update javascript package dependency to v0.1.12
 
 ## 0.1.12 - 2023-07-10
 
 - Update eslint and resolve all existing errors/warnings
 - Add and configure prettier
-- Add support for passing a pollInterval to the `PrefabProvider`
+- Add support for passing a pollInterval to the `ReforgeProvider`
 
 ## [0.1.11] - 2023-07-06
 
-- Update `prefab-cloud-js` to v0.1.11
+- Update javascript package dependency to v0.1.11
 
 ## [0.1.10] - 2023-06-27
 
-- Update `prefab-cloud-js` to v0.1.10
+- Update javascript package dependency to v0.1.10
 
 ## [0.1.9] - 2023-06-27
 
-- Update `prefab-cloud-js` to v0.1.9
+- Update javascript package dependency to v0.1.9
 
 ## [0.1.8] - 2023-06-27
 
@@ -169,11 +169,11 @@ Changelog
 
 ## [0.1.3] - 2022-09-29
 
-- Bump prefab-cloud-js dependency to 0.1.3
+- Bump javascript package dependency to 0.1.3
 
 ## [0.1.2] - 2022-08-18
 
-- Bump prefab-cloud-js dependency to 0.1.2
+- Bump javascript package dependency to 0.1.2
 
 ## [0.0.1] - 2022-08-15
 

@@ -1,30 +1,30 @@
-import { prefab } from "@prefab-cloud/prefab-cloud-js";
+import { prefab as reforge } from "@prefab-cloud/prefab-cloud-js";
 import {
-  PrefabProvider,
-  usePrefab,
-  usePrefabTypesafe,
+  ReforgeProvider,
+  useReforge,
+  useReforgeTypesafe,
   ConfigValue,
   ContextAttributes,
   SharedSettings,
   Props,
   ProvidedContext,
-  PrefabTypesafeClass,
-  createPrefabHook,
-} from "./PrefabProvider";
-import { PrefabTestProvider, TestProps } from "./PrefabTestProvider";
+  ReforgeTypesafeClass,
+  createReforgeHook,
+} from "./ReforgeProvider";
+import { ReforgeTestProvider, TestProps } from "./ReforgeTestProvider";
 
 export {
-  PrefabProvider,
-  PrefabTestProvider,
-  usePrefab,
-  usePrefabTypesafe,
+  ReforgeProvider,
+  ReforgeTestProvider,
+  useReforge,
+  useReforgeTypesafe,
   TestProps,
   Props,
   ConfigValue,
   ContextAttributes,
-  prefab,
+  reforge,
   SharedSettings,
-  PrefabTypesafeClass,
+  ReforgeTypesafeClass,
   ProvidedContext,
-  createPrefabHook,
+  createReforgeHook,
 };

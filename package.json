@@ -1,5 +1,5 @@
 {
-  "name": "@prefab-cloud/prefab-cloud-react",
+  "name": "@reforge-com/sdk-react",
   "version": "0.4.6",
   "description": "Feature Flags & Dynamic Configuration as a Service",
   "main": "dist/index.cjs",
@@ -23,7 +23,7 @@
     "prebuild": "node scripts/update-version.js",
     "build": "rm -rf dist/ && tsup",
     "dev": "tsup --watch",
-    "bundle": "esbuild --minify --target=esnext --bundle --outfile=dist/prefab-react.bundle.js --global-name=window.prefabReactNamespace dist/index.cjs && echo 'window.prefabReact = window.prefabReactNamespace.prefabReact' >> dist/prefab-react.bundle.js",
+    "bundle": "esbuild --minify --target=esnext --bundle --outfile=dist/reforge-react.bundle.js --global-name=window.reforgeReactNamespace dist/index.cjs && echo 'window.reforgeReact = window.reforgeReactNamespace.reforgeReact' >> dist/reforge-react.bundle.js",
     "pretest": "node scripts/update-version.js",
     "test": "tsup && jest --verbose",
     "lint": "eslint --ext .ts,.tsx src/",

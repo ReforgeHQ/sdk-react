@@ -2,12 +2,12 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
-import { Prefab } from "@prefab-cloud/prefab-cloud-js";
-import { PrefabTestProvider, usePrefab, createPrefabHook } from "../index";
+import { Prefab as Reforge } from "@prefab-cloud/prefab-cloud-js";
+import { ReforgeTestProvider, useReforge, createReforgeHook } from "../index";
 import { AppConfig, TypesafeComponent, HookComponent, typesafeTestConfig } from "./test-helpers";
 
 function MyComponent() {
-  const { get, isEnabled, loading, keys } = usePrefab();
+  const { get, isEnabled, loading, keys } = useReforge();
   const greeting = get("greeting") || "Default";
   const subtitle = get("subtitle")?.actualSubtitle || "Default Subtitle";
 
@@ -30,12 +30,12 @@ function MyComponent() {
   );
 }
 
-describe("PrefabTestProvider", () => {
+describe("ReforgeTestProvider", () => {
   const renderInTestProvider = (config: Record<string, any>) => {
     render(
-      <PrefabTestProvider config={config}>
+      <ReforgeTestProvider config={config}>
         <MyComponent />
-      </PrefabTestProvider>
+      </ReforgeTestProvider>
     );
   };
 
@@ -83,16 +83,16 @@ describe("PrefabTestProvider", () => {
   });
 });
 
-describe("PrefabTestProvider with TypesafeClass", () => {
+describe("ReforgeTestProvider with TypesafeClass", () => {
   it("makes TypesafeClass methods available in test environment", () => {
     render(
-      <PrefabTestProvider config={typesafeTestConfig} PrefabTypesafeClass={AppConfig}>
+      <ReforgeTestProvider config={typesafeTestConfig} ReforgeTypesafeClass={AppConfig}>
         <TypesafeComponent />
         <HookComponent />
-      </PrefabTestProvider>
+      </ReforgeTestProvider>
     );
 
-    // No need to wait for loading since PrefabTestProvider is synchronous
+    // No need to wait for loading since ReforgeTestProvider is synchronous
     expect(screen.getByTestId("app-name")).toHaveTextContent("Test App From TestProvider");
     expect(screen.getByTestId("api-url")).toHaveTextContent("https://test-provider.example.com");
     expect(screen.getByTestId("raw-theme-color")).toHaveTextContent("#00FF00");
@@ -102,16 +102,16 @@ describe("PrefabTestProvider with TypesafeClass", () => {
 
   it("uses default values when configs are not provided in test provider", () => {
     render(
-      <PrefabTestProvider
+      <ReforgeTestProvider
         config={{
           // Only provide some configs
           "app.name": "Only App Name Set",
         }}
-        PrefabTypesafeClass={AppConfig}
+        ReforgeTypesafeClass={AppConfig}
       >
         <TypesafeComponent />
         <HookComponent />
-      </PrefabTestProvider>
+      </ReforgeTestProvider>
     );
 
     expect(screen.getByTestId("app-name")).toHaveTextContent("Only App Name Set");
@@ -122,34 +122,34 @@ describe("PrefabTestProvider with TypesafeClass", () => {
   });
 });
 
-// Adding explicit tests for createPrefabHook functionality
-describe("createPrefabHook functionality with PrefabTestProvider", () => {
+// Adding explicit tests for createReforgeHook functionality
+describe("createReforgeHook functionality with ReforgeTestProvider", () => {
   // Custom TypesafeClass for testing
   class CustomFeatureFlags {
-    private prefab: Prefab;
+    private reforge: Reforge;
 
-    constructor(prefab: Prefab) {
-      this.prefab = prefab;
+    constructor(reforge: Reforge) {
+      this.reforge = reforge;
     }
 
     isCustomFeatureEnabled(): boolean {
-      return this.prefab.isEnabled("custom.feature");
+      return this.reforge.isEnabled("custom.feature");
     }
 
     getCustomMessage(): string {
-      const message = this.prefab.get("custom.message");
+      const message = this.reforge.get("custom.message");
       return typeof message === "string" ? message : "Default Message";
     }
 
     calculateCustomValue(multiplier: number): number {
-      const baseValue = this.prefab.get("custom.base.value");
+      const baseValue = this.reforge.get("custom.base.value");
       const base = typeof baseValue === "number" ? baseValue : 5;
       return base * multiplier;
     }
   }
 
   // Create a typed hook using our TypesafeClass
-  const useCustomFeatureFlags = createPrefabHook(CustomFeatureFlags);
+  const useCustomFeatureFlags = createReforgeHook(CustomFeatureFlags);
 
   // Component that uses the custom typed hook
   function CustomHookComponent() {
@@ -165,18 +165,18 @@ describe("createPrefabHook functionality with PrefabTestProvider", () => {
     );
   }
 
-  it("creates a working custom hook with createPrefabHook", () => {
+  it("creates a working custom hook with createReforgeHook", () => {
     render(
-      <PrefabTestProvider
+      <ReforgeTestProvider
         config={{
           "custom.message": "Hello from Test Custom Hook",
           "custom.feature": true,
           "custom.base.value": 10,
         }}
-        PrefabTypesafeClass={CustomFeatureFlags}
+        ReforgeTypesafeClass={CustomFeatureFlags}
       >
         <CustomHookComponent />
-      </PrefabTestProvider>
+      </ReforgeTestProvider>
     );
 
     expect(screen.getByTestId("custom-message")).toHaveTextContent("Hello from Test Custom Hook");
@@ -186,15 +186,15 @@ describe("createPrefabHook functionality with PrefabTestProvider", () => {
 
   it("provides default values when configs are not provided", () => {
     render(
-      <PrefabTestProvider
+      <ReforgeTestProvider
         config={{
           // Only specify some values
           "custom.message": "Only Message Set",
         }}
-        PrefabTypesafeClass={CustomFeatureFlags}
+        ReforgeTypesafeClass={CustomFeatureFlags}
       >
         <CustomHookComponent />
-      </PrefabTestProvider>
+      </ReforgeTestProvider>
     );
 
     expect(screen.getByTestId("custom-message")).toHaveTextContent("Only Message Set");
@@ -208,11 +208,11 @@ describe("createPrefabHook functionality with PrefabTestProvider", () => {
     const methodSpy = jest.fn().mockReturnValue("memoized result");
 
     class SpiedClass {
-      private prefab: Prefab;
+      private reforge: Reforge;
 
-      constructor(prefab: Prefab) {
-        constructorSpy(prefab);
-        this.prefab = prefab;
+      constructor(reforge: Reforge) {
+        constructorSpy(reforge);
+        this.reforge = reforge;
       }
 
       // eslint-disable-next-line class-methods-use-this
@@ -221,7 +221,7 @@ describe("createPrefabHook functionality with PrefabTestProvider", () => {
       }
     }
 
-    const useSpiedHook = createPrefabHook(SpiedClass);
+    const useSpiedHook = createReforgeHook(SpiedClass);
 
     // Component that forces re-renders
     function ReRenderingComponent() {
@@ -246,9 +246,9 @@ describe("createPrefabHook functionality with PrefabTestProvider", () => {
     }
 
     render(
-      <PrefabTestProvider config={{}} PrefabTypesafeClass={SpiedClass}>
+      <ReforgeTestProvider config={{}} ReforgeTypesafeClass={SpiedClass}>
         <ReRenderingComponent />
-      </PrefabTestProvider>
+      </ReforgeTestProvider>
     );
 
     // Wait for all re-renders to complete

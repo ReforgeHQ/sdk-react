@@ -3,14 +3,14 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import { act } from "react-dom/test-utils";
-import { ContextValue, Prefab } from "@prefab-cloud/prefab-cloud-js";
+import { ContextValue, Prefab as Reforge } from "@prefab-cloud/prefab-cloud-js";
 import {
   ContextAttributes,
-  PrefabProvider,
-  usePrefab,
-  usePrefabTypesafe,
-  PrefabTestProvider,
-  createPrefabHook,
+  ReforgeProvider,
+  useReforge,
+  useReforgeTypesafe,
+  ReforgeTestProvider,
+  createReforgeHook,
 } from "../index";
 import {
   AppConfig,
@@ -22,7 +22,7 @@ import {
 type Config = { [key: string]: any };
 
 function MyComponent() {
-  const { get, isEnabled, loading, keys } = usePrefab();
+  const { get, isEnabled, loading, keys } = useReforge();
   const greeting = get("greeting") || "Default";
   const subtitle = get("subtitle")?.actualSubtitle || "Default Subtitle";
 
@@ -58,7 +58,7 @@ afterEach(() => {
   error.mockReset();
 });
 
-describe("PrefabProvider", () => {
+describe("ReforgeProvider", () => {
   const defaultContextAttributes = { user: { email: "test@example.com" } };
 
   const renderInProvider = ({
@@ -69,9 +69,9 @@ describe("PrefabProvider", () => {
     onError?: (err: Error) => void;
   }) =>
     render(
-      <PrefabProvider apiKey="api-key" contextAttributes={contextAttributes} onError={onError}>
+      <ReforgeProvider apiKey="api-key" contextAttributes={contextAttributes} onError={onError}>
         <MyComponent />
-      </PrefabProvider>
+      </ReforgeProvider>
     );
 
   const stubConfig = (config: Config) =>
@@ -180,13 +180,13 @@ describe("PrefabProvider", () => {
 
     act(() => {
       rendered.rerender(
-        <PrefabProvider
+        <ReforgeProvider
           apiKey="api-key"
           contextAttributes={{ user: { email: "test@example.com" } }}
           onError={() => {}}
         >
           <MyComponent />
-        </PrefabProvider>
+        </ReforgeProvider>
       );
     });
 
@@ -213,9 +213,9 @@ describe("PrefabProvider", () => {
       setContextAttributes = innerSetContextAttributes;
 
       return (
-        <PrefabProvider apiKey="api-key" contextAttributes={contextAttributes} onError={() => {}}>
+        <ReforgeProvider apiKey="api-key" contextAttributes={contextAttributes} onError={() => {}}>
           <MyComponent />
-        </PrefabProvider>
+        </ReforgeProvider>
       );
     }
 
@@ -251,14 +251,14 @@ describe("PrefabProvider", () => {
     const promise = stubConfig({ greeting: { value: { string: "afterEvaluationCallback" } } });
 
     render(
-      <PrefabProvider
+      <ReforgeProvider
         apiKey="api-key"
         contextAttributes={context}
         afterEvaluationCallback={callback}
         onError={() => {}}
       >
         <MyComponent />
-      </PrefabProvider>
+      </ReforgeProvider>
     );
 
     await act(async () => {
@@ -298,10 +298,10 @@ describe("PrefabProvider", () => {
   });
 });
 
-describe("PrefabProvider with TypesafeClass", () => {
+describe("ReforgeProvider with TypesafeClass", () => {
   const defaultContextAttributes = { user: { email: "test@example.com" } };
 
-  // Mock prefab client responses for typesafe tests
+  // Mock reforge client responses for typesafe tests
   beforeEach(() => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -311,15 +311,15 @@ describe("PrefabProvider with TypesafeClass", () => {
     ) as jest.Mock;
   });
 
-  it("makes TypesafeClass methods available through usePrefabTypesafe", async () => {
+  it("makes TypesafeClass methods available through useReforgeTypesafe", async () => {
     render(
-      <PrefabProvider
+      <ReforgeProvider
         apiKey="test-api-key"
         contextAttributes={defaultContextAttributes}
-        PrefabTypesafeClass={AppConfig}
+        ReforgeTypesafeClass={AppConfig}
       >
         <TypesafeComponent />
-      </PrefabProvider>
+      </ReforgeProvider>
     );
 
     // Wait for loading to finish
@@ -336,13 +336,13 @@ describe("PrefabProvider with TypesafeClass", () => {
 
   it("provides typesafe methods through the custom hook", async () => {
     render(
-      <PrefabProvider
+      <ReforgeProvider
         apiKey="test-api-key"
         contextAttributes={defaultContextAttributes}
-        PrefabTypesafeClass={AppConfig}
+        ReforgeTypesafeClass={AppConfig}
       >
         <HookComponent />
-      </PrefabProvider>
+      </ReforgeProvider>
     );
 
     // Wait for loading to finish
@@ -367,14 +367,14 @@ describe("PrefabProvider with TypesafeClass", () => {
     ) as jest.Mock;
 
     render(
-      <PrefabProvider
+      <ReforgeProvider
         apiKey="test-api-key"
         contextAttributes={defaultContextAttributes}
-        PrefabTypesafeClass={AppConfig}
+        ReforgeTypesafeClass={AppConfig}
       >
         <TypesafeComponent />
         <HookComponent />
-      </PrefabProvider>
+      </ReforgeProvider>
     );
 
     // Wait for loading to finish
@@ -397,16 +397,16 @@ describe("TypesafeClass instance memoization", () => {
     const methodSpy = jest.fn();
 
     class TrackedAppConfig {
-      constructor(prefab: Prefab) {
-        constructorSpy(prefab);
-        this.prefab = prefab;
+      constructor(reforge: Reforge) {
+        constructorSpy(reforge);
+        this.reforge = reforge;
       }
 
-      private prefab: Prefab;
+      private reforge: Reforge;
 
       appName(): string {
         methodSpy();
-        const name = this.prefab.get("app.name");
+        const name = this.reforge.get("app.name");
         return typeof name === "string" ? name : "Default App";
       }
     }
@@ -414,7 +414,7 @@ describe("TypesafeClass instance memoization", () => {
     // Component that forces re-renders and tracks calls
     function ReRenderingComponent() {
       const [counter, setCounter] = React.useState(0);
-      const { appName } = usePrefabTypesafe<TrackedAppConfig>();
+      const { appName } = useReforgeTypesafe<TrackedAppConfig>();
 
       // Force a re-render after mounting
       React.useEffect(() => {
@@ -431,14 +431,14 @@ describe("TypesafeClass instance memoization", () => {
     }
 
     render(
-      <PrefabTestProvider
+      <ReforgeTestProvider
         config={{
           "app.name": "Memoization Test",
         }}
-        PrefabTypesafeClass={TrackedAppConfig}
+        ReforgeTypesafeClass={TrackedAppConfig}
       >
         <ReRenderingComponent />
-      </PrefabTestProvider>
+      </ReforgeTestProvider>
     );
 
     // Wait for all re-renders to complete
@@ -452,36 +452,36 @@ describe("TypesafeClass instance memoization", () => {
   });
 });
 
-// Adding explicit tests for createPrefabHook functionality
-describe("createPrefabHook functionality with PrefabProvider", () => {
+// Adding explicit tests for createReforgeHook functionality
+describe("createReforgeHook functionality with ReforgeProvider", () => {
   const defaultContextAttributes = { user: { email: "test@example.com" } };
 
   // Create a custom TypesafeClass for testing
   class CustomFeatureFlags {
-    private prefab: Prefab;
+    private reforge: Reforge;
 
-    constructor(prefab: Prefab) {
-      this.prefab = prefab;
+    constructor(reforge: Reforge) {
+      this.reforge = reforge;
     }
 
     isSecretFeatureEnabled(): boolean {
-      return this.prefab.isEnabled("secret.feature");
+      return this.reforge.isEnabled("secret.feature");
     }
 
     getGreeting(): string {
-      const greeting = this.prefab.get("greeting");
+      const greeting = this.reforge.get("greeting");
       return typeof greeting === "string" ? greeting : "Default Greeting";
     }
 
     calculateValue(multiplier: number): number {
-      const baseValue = this.prefab.get("base.value");
+      const baseValue = this.reforge.get("base.value");
       const base = typeof baseValue === "number" ? baseValue : 10;
       return base * multiplier;
     }
   }
 
   // Create a typed hook using our TypesafeClass
-  const useCustomFeatureFlags = createPrefabHook(CustomFeatureFlags);
+  const useCustomFeatureFlags = createReforgeHook(CustomFeatureFlags);
 
   // Component that uses the custom typed hook
   function CustomHookComponent() {
@@ -516,15 +516,15 @@ describe("createPrefabHook functionality with PrefabProvider", () => {
     ) as jest.Mock;
   });
 
-  it("creates a working custom hook with createPrefabHook", async () => {
+  it("creates a working custom hook with createReforgeHook", async () => {
     render(
-      <PrefabProvider
+      <ReforgeProvider
         apiKey="test-api-key"
-        PrefabTypesafeClass={CustomFeatureFlags}
+        ReforgeTypesafeClass={CustomFeatureFlags}
         contextAttributes={defaultContextAttributes}
       >
         <CustomHookComponent />
-      </PrefabProvider>
+      </ReforgeProvider>
     );
 
     // Wait for loading to finish
@@ -545,11 +545,11 @@ describe("createPrefabHook functionality with PrefabProvider", () => {
     const methodSpy = jest.fn().mockReturnValue("test result");
 
     class SpiedClass {
-      private prefab: Prefab;
+      private reforge: Reforge;
 
-      constructor(prefab: Prefab) {
-        constructorSpy(prefab);
-        this.prefab = prefab;
+      constructor(reforge: Reforge) {
+        constructorSpy(reforge);
+        this.reforge = reforge;
       }
 
       // eslint-disable-next-line class-methods-use-this
@@ -558,7 +558,7 @@ describe("createPrefabHook functionality with PrefabProvider", () => {
       }
     }
 
-    const useSpiedHook = createPrefabHook(SpiedClass);
+    const useSpiedHook = createReforgeHook(SpiedClass);
 
     // Component that forces re-renders
     function ReRenderingComponent() {
@@ -582,7 +582,7 @@ describe("createPrefabHook functionality with PrefabProvider", () => {
       );
     }
 
-    // Mock the fetch response for PrefabProvider
+    // Mock the fetch response for ReforgeProvider
     global.fetch = jest.fn(() =>
       Promise.resolve({
         ok: true,
@@ -591,13 +591,13 @@ describe("createPrefabHook functionality with PrefabProvider", () => {
     ) as jest.Mock;
 
     render(
-      <PrefabProvider
+      <ReforgeProvider
         apiKey="test-api-key"
         contextAttributes={defaultContextAttributes}
-        PrefabTypesafeClass={SpiedClass}
+        ReforgeTypesafeClass={SpiedClass}
       >
         <ReRenderingComponent />
-      </PrefabProvider>
+      </ReforgeProvider>
     );
 
     // Wait for all re-renders to complete
@@ -605,7 +605,7 @@ describe("createPrefabHook functionality with PrefabProvider", () => {
       expect(screen.getByTestId("hook-result")).toHaveTextContent("(Render count: 3)");
     });
 
-    // In PrefabProvider, constructor may be called twice due to React's strict mode
+    // In ReforgeProvider, constructor may be called twice due to React's strict mode
     // or the provider's initialization process, which is still valid behavior
     expect(constructorSpy).toHaveBeenCalledTimes(2);
     // Method is called once on initial render, once during initialization, and three more times for re-renders
