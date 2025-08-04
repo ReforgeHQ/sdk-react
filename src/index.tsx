@@ -1,4 +1,4 @@
-import { prefab as reforge } from "@prefab-cloud/prefab-cloud-js";
+import { reforge } from "@reforge-com/javascript";
 import {
   ReforgeProvider,
   useReforge,

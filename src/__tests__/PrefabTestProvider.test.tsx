@@ -2,7 +2,7 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
-import { Prefab as Reforge } from "@prefab-cloud/prefab-cloud-js";
+import { Reforge } from "@reforge-com/javascript";
 import { ReforgeTestProvider, useReforge, createReforgeHook } from "../index";
 import { AppConfig, TypesafeComponent, HookComponent, typesafeTestConfig } from "./test-helpers";
 

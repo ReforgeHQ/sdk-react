@@ -13,4 +13,4 @@ npm run build
 npm publish --tag pre
 
 echo "Pre-release published successfully! To install it, use:"
-echo "npm install @reforge-com/sdk-react@pre"
+echo "npm install @reforge-com/react@pre"

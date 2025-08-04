@@ -9,10 +9,10 @@
 
 # How to Contribute
 
-Thanks for your interest in contributing to `@reforge-com/sdk-react`! Here are a few general
-guidelines on contributing and reporting bugs that we ask you to review. Following these guidelines
-helps to communicate that you respect the time of the contributors managing and developing this open
-source project. In return, they should reciprocate that respect in addressing your issue, assessing
+Thanks for your interest in contributing to `@reforge-com/react`! Here are a few general guidelines
+on contributing and reporting bugs that we ask you to review. Following these guidelines helps to
+communicate that you respect the time of the contributors managing and developing this open source
+project. In return, they should reciprocate that respect in addressing your issue, assessing
 changes, and helping you finalize your pull requests. In that spirit of mutual respect, we endeavour
 to review incoming issues and pull requests within 10 days.
 
@@ -47,7 +47,7 @@ versioning, we may reserve breaking changes until the next major version release
 
 ## Other Ways to Contribute
 
-We welcome anyone that wants to contribute to `@reforge-com/sdk-react` to triage and reply to open
+We welcome anyone that wants to contribute to `@reforge-com/react` to triage and reply to open
 issues to help troubleshoot and fix existing bugs. Here is what you can do:
 
 - Help ensure that existing issues follows the recommendations from the
@@ -56,9 +56,9 @@ issues to help troubleshoot and fix existing bugs. Here is what you can do:
 - Review and update the existing content of our [README](./README.md) with up-to-date instructions
   and code samples.
 - Review existing pull requests, and testing patches against real existing applications that use
-  `@reforge-com/sdk-react`.
+  `@reforge-com/react`.
 - Write a test, or add a missing test case to an existing test.
 
-Thanks again for your interest on contributing to `@reforge-com/sdk-react`!
+Thanks again for your interest on contributing to `@reforge-com/react`!
 
 :heart:

@@ -20,5 +20,5 @@ module.exports = {
   },
   // Support for ESM modules in Jest
   extensionsToTreatAsEsm: [".ts", ".tsx"],
-  transformIgnorePatterns: ["node_modules/(?!(@prefab-cloud/prefab-cloud-js)/)"],
+  transformIgnorePatterns: ["node_modules/(?!(@reforge-com/javascript)/)"],
 };

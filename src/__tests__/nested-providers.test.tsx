@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import { render, screen } from "@testing-library/react";
-import { Context as ReforgeContext } from "@prefab-cloud/prefab-cloud-js";
+import { Context as ReforgeContext } from "@reforge-com/javascript";
 import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
 import {
   reforge as globalReforge,

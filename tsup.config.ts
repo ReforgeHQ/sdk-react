@@ -12,7 +12,7 @@ export default defineConfig({
       js: format === "cjs" ? ".cjs" : ".mjs",
     };
   },
-  external: ["react", "@prefab-cloud/prefab-cloud-js"],
+  external: ["react", "@reforge-com/javascript"],
   minify: false,
   sourcemap: true,
   treeshake: true,

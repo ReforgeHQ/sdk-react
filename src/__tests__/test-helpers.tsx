@@ -1,5 +1,5 @@
 import React from "react";
-import { Prefab as Reforge } from "@prefab-cloud/prefab-cloud-js";
+import { Reforge } from "@reforge-com/javascript";
 import { useReforgeTypesafe, createReforgeHook } from "../index";
 
 // Simple TypesafeClass for testing

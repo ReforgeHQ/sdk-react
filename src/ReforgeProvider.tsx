@@ -1,12 +1,12 @@
 import React, { PropsWithChildren } from "react";
 import {
-  prefab as reforge,
+  reforge,
   type CollectContextModeType,
   type ConfigValue,
   Context,
   type Duration,
-  Prefab as Reforge,
-} from "@prefab-cloud/prefab-cloud-js";
+  Reforge,
+} from "@reforge-com/javascript";
 import version from "./version";
 
 type ContextValue = number | string | boolean;

@@ -1,10 +1,10 @@
-# @reforge-com/sdk-react
+# @reforge-com/react
 
 A React provider and hook for [Reforge]
 
 ## Installation
 
-`npm install @reforge-com/sdk-react` or `yarn add @reforge-com/sdk-react`
+`npm install @reforge-com/react` or `yarn add @reforge-com/react`
 
 TypeScript types are included with the package.
 
@@ -15,7 +15,7 @@ TypeScript types are included with the package.
 Wrap your component tree in the `ReforgeProvider`, e.g.
 
 ```javascript
-import { ReforgeProvider } from "@reforge-com/sdk-react";
+import { ReforgeProvider } from "@reforge-com/react";
 
 const WrappedApp = () => {
   const context = {
@@ -111,7 +111,7 @@ function MyComponent() {
 You could do the following in [jest]/[rtl]
 
 ```javascript
-import { ReforgeTestProvider } from '@reforge-com/sdk-react';
+import { ReforgeTestProvider } from '@reforge-com/react';
 
 const renderInTestProvider = (config: {[key: string]: any}) => {
   render(
@@ -185,5 +185,5 @@ This script:
 To install the pre-release version:
 
 ```bash
-npm install @reforge-com/sdk-react@pre
+npm install @reforge-com/react@pre
 ```
