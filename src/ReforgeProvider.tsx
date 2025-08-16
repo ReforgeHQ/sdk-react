@@ -7,16 +7,15 @@ import {
   type Duration,
   Reforge,
 } from "@reforge-com/javascript";
-import version from "./version";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { version } = require("../package.json");
 
 type ContextValue = number | string | boolean;
 type ContextAttributes = { [key: string]: Record<string, ContextValue> };
 
 type EvaluationCallback = (key: string, value: ConfigValue, context: Context | undefined) => void;
 
-type ClassMethods<T> = {
-  [K in keyof T]: T[K];
-};
+type ClassMethods<T> = { [K in keyof T]: T[K] };
 
 type ReforgeTypesafeClass<T> = new (reforgeInstance: Reforge) => T;
 

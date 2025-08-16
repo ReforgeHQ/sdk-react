@@ -11,19 +11,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".tool-versions"
-          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+      - name: enable corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.9.2 --activate
+      - name: cache yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/cache
+          key: ${{ runner.os }}-yarn-${{ hashfiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install modules
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Run tests
-        run: npm run test
+        run: yarn test
 
       - name: Run lints
-        run: npm run lint
+        run: yarn lint
 
       - name: Run formatter
-        run: npm run format
+        run: yarn format
 
       - name: Run Build
-        run: npm run build
+        run: yarn build
