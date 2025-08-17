@@ -34,8 +34,8 @@
     "bundle": "esbuild --minify --target=esnext --bundle --outfile=dist/reforge-react.bundle.js --global-name=window.reforgeReactNamespace dist/index.cjs && echo 'window.reforgeReact = window.reforgeReactNamespace.reforgeReact' >> dist/reforge-react.bundle.js",
     "test": "tsup && jest --verbose",
     "lint": "eslint --ext .ts,.tsx src/",
-    "format": "prettier . -l",
-    "format:fix": "prettier --write ."
+    "prettier": "prettier . -l",
+    "prettier:fix": "prettier --write ."
   },
   "author": "Jeffrey Chupp",
   "license": "ISC",
