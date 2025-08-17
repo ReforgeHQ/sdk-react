@@ -6,20 +6,20 @@ import {
   ConfigValue,
   ContextAttributes,
   SharedSettings,
-  Props,
+  ReforgeProviderProps,
   ProvidedContext,
   ReforgeTypesafeClass,
   createReforgeHook,
 } from "./ReforgeProvider";
-import { ReforgeTestProvider, TestProps } from "./ReforgeTestProvider";
+import { ReforgeTestProvider, ReforgeTestProviderProps } from "./ReforgeTestProvider";
 
 export {
   ReforgeProvider,
   ReforgeTestProvider,
   useReforge,
   useReforgeTypesafe,
-  TestProps,
-  Props,
+  ReforgeTestProviderProps,
+  ReforgeProviderProps,
   ConfigValue,
   ContextAttributes,
   reforge,
