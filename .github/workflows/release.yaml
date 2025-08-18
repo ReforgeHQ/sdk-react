@@ -60,8 +60,19 @@ jobs:
         with:
           node-version-file: ".tool-versions"
           registry-url: "https://registry.npmjs.org"
-      - run: npm ci
-      - run: npm run build
+      - name: enable corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.9.2 --activate
+      - name: cache yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/cache
+          key: ${{ runner.os }}-yarn-${{ hashfiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --immutable
+      - run: yarn build
       - name: Publish to npm
         run: |
           if [ "${{ needs.check-version.outputs.is-prerelease }}" == "true" ]; then
