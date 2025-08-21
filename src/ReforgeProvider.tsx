@@ -7,8 +7,15 @@ import {
   type Duration,
   Reforge,
 } from "@reforge-com/javascript";
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require("../package.json");
+
+// @reforge-com/cli#generate will create interfaces into this namespace for React to consume
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ReactHookConfigurationRaw extends Record<string, unknown> {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ReactHookConfigurationAccessor extends Record<string, unknown> {}
 
 type ContextValue = number | string | boolean;
 type ContextAttributes = Record<string, Record<string, ContextValue>>;
@@ -16,7 +23,7 @@ type EvaluationCallback = (key: string, value: ConfigValue, context: Context | u
 
 type ClassMethods<T> = { [K in keyof T]: T[K] };
 
-type ReforgeTypesafeClass<T> = new (reforgeInstance: Reforge) => T;
+type ReforgeTypesafeClass<T = unknown> = new (reforgeInstance: Reforge) => T;
 
 type SharedSettings = {
   apiKey?: string;
@@ -33,7 +40,9 @@ type SharedSettings = {
 
 // Extract base context without ClassMethods
 export type BaseContext = {
-  get: (key: string) => unknown;
+  get: (
+    key: keyof ReactHookConfigurationRaw & string
+  ) => ReactHookConfigurationRaw[keyof ReactHookConfigurationRaw];
   getDuration(key: string): Duration | undefined;
   contextAttributes: ContextAttributes;
   isEnabled: (key: string) => boolean;
@@ -43,12 +52,12 @@ export type BaseContext = {
   settings: SharedSettings;
 };
 
-export type ProvidedContext<T = Record<string, unknown>> = BaseContext & ClassMethods<T>;
+export type ProvidedContext = BaseContext & ClassMethods<ReactHookConfigurationAccessor>;
 
 export const defaultContext: BaseContext = {
-  get: (_: string) => undefined,
-  getDuration: (_: string) => undefined,
-  isEnabled: (_: string) => false,
+  get: (_key: string) => undefined,
+  getDuration: (_key: string) => undefined,
+  isEnabled: (_key: string) => false,
   keys: [] as string[],
   loading: true,
   contextAttributes: {},
@@ -61,21 +70,23 @@ export const ReforgeContext = React.createContext<ProvidedContext>(
 );
 
 // This is a factory function that creates a fully typed useReforge hook for a specific ReforgeTypesafe class
-export const createReforgeHook =
-  <T,>(_typesafeClass: ReforgeTypesafeClass<T>) =>
-  (): ProvidedContext<T> =>
-    React.useContext(ReforgeContext) as ProvidedContext<T>;
+export function createReforgeHook<T>(_typesafeClass: ReforgeTypesafeClass<T>) {
+  return function useReforgeHook(): BaseContext & T {
+    const context = React.useContext(ReforgeContext);
+    return context as BaseContext & T;
+  };
+}
 
 // Basic hook for general use - requires type parameter
 export const useBaseReforge = () => React.useContext(ReforgeContext);
 
 // Helper hook for explicit typing
-export const useReforgeTypesafe = <T,>(): ProvidedContext<T> =>
-  useBaseReforge() as unknown as ProvidedContext<T>;
+export function useReforgeTypesafe<T>(): BaseContext & T {
+  return useBaseReforge() as BaseContext & T;
+}
 
 // General hook that returns the context with any explicit type
-export const useReforge = <T = unknown,>(): ProvidedContext<T> =>
-  useBaseReforge() as unknown as ProvidedContext<T>;
+export const useReforge = (): ProvidedContext => useBaseReforge() as unknown as ProvidedContext;
 
 let globalReforgeIsTaken = false;
 
@@ -88,10 +99,10 @@ export const assignReforgeClient = () => {
   return reforge;
 };
 
-export type ReforgeProviderProps<T = Record<string, unknown>> = SharedSettings & {
+export type ReforgeProviderProps = SharedSettings & {
   apiKey: string;
   contextAttributes?: ContextAttributes;
-  ReforgeTypesafeClass?: ReforgeTypesafeClass<T>;
+  ReforgeTypesafeClass?: ReforgeTypesafeClass<any>;
 };
 
 const getContext = (
@@ -143,7 +154,7 @@ export const extractTypesafeMethods = (
   return methods;
 };
 
-function ReforgeProvider<T = unknown>({
+function ReforgeProvider({
   apiKey,
   contextAttributes = {},
   onError = (e: unknown) => {
@@ -160,7 +171,7 @@ function ReforgeProvider<T = unknown>({
   collectLoggerNames,
   collectContextMode,
   ReforgeTypesafeClass: TypesafeClass,
-}: PropsWithChildren<ReforgeProviderProps<T>>) {
+}: PropsWithChildren<ReforgeProviderProps>) {
   const settings = {
     apiKey,
     endpoints,
@@ -273,7 +284,7 @@ function ReforgeProvider<T = unknown>({
 
     if (typesafeInstance) {
       const methods = extractTypesafeMethods(typesafeInstance);
-      return { ...baseContext, ...methods };
+      return { ...baseContext, ...methods } as ProvidedContext;
     }
 
     return baseContext;

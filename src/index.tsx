@@ -10,6 +10,8 @@ import {
   ProvidedContext,
   ReforgeTypesafeClass,
   createReforgeHook,
+  ReactHookConfigurationAccessor,
+  ReactHookConfigurationRaw,
 } from "./ReforgeProvider";
 import { ReforgeTestProvider, ReforgeTestProviderProps } from "./ReforgeTestProvider";
 
@@ -26,5 +28,7 @@ export {
   SharedSettings,
   ReforgeTypesafeClass,
   ProvidedContext,
+  ReactHookConfigurationAccessor,
+  ReactHookConfigurationRaw,
   createReforgeHook,
 };

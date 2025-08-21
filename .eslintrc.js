@@ -41,6 +41,8 @@ module.exports = {
     {
       files: ["*.test.ts", "*.test.tsx"],
       rules: {
+        "react/jsx-props-no-spreading": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
         "import/no-extraneous-dependencies": "off",
       },
     },

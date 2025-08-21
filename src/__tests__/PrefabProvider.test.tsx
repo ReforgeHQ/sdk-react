@@ -1,8 +1,7 @@
 /* eslint-disable max-classes-per-file */
-import React from "react";
+import React, { act } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
-import { act } from "react-dom/test-utils";
 import { ContextValue, Reforge } from "@reforge-com/javascript";
 import {
   ContextAttributes,
@@ -24,6 +23,7 @@ type Config = { [key: string]: any };
 function MyComponent() {
   const { get, isEnabled, loading, keys } = useReforge();
   const greeting = get("greeting") || "Default";
+  // @ts-expect-error This is OK in a test
   const subtitle = get("subtitle")?.actualSubtitle || "Default Subtitle";
 
   if (loading) {
@@ -32,7 +32,7 @@ function MyComponent() {
 
   return (
     <div>
-      <h1 role="alert">{greeting}</h1>
+      <h1 role="alert">{greeting.toString()}</h1>
       <h2 role="banner">{subtitle}</h2>
       {isEnabled("secretFeature") && (
         <button type="submit" title="secret-feature">
@@ -425,7 +425,11 @@ describe("TypesafeClass instance memoization", () => {
 
       return (
         <div data-testid="counter">
-          {appName()} (Render count: {counter})
+          {
+            // @ts-expect-error This is OK in a test
+            appName()
+          }{" "}
+          (Render count: {counter})
         </div>
       );
     }
@@ -494,9 +498,22 @@ describe("createReforgeHook functionality with ReforgeProvider", () => {
 
     return (
       <div>
-        <h1 data-testid="custom-greeting">{getGreeting()}</h1>
-        {isSecretFeatureEnabled() && <div data-testid="custom-feature">Secret Feature Enabled</div>}
-        <div data-testid="calculated-value">{calculateValue(5)}</div>
+        <h1 data-testid="custom-greeting">
+          {
+            // @ts-expect-error This is OK in a test
+            getGreeting()
+          }
+        </h1>
+        {
+          // @ts-expect-error This is OK in a test
+          isSecretFeatureEnabled() && <div data-testid="custom-feature">Secret Feature Enabled</div>
+        }
+        <div data-testid="calculated-value">
+          {
+            // @ts-expect-error This is OK in a test
+            calculateValue(5)
+          }
+        </div>
       </div>
     );
   }
@@ -566,6 +583,7 @@ describe("createReforgeHook functionality with ReforgeProvider", () => {
       const { testMethod } = useSpiedHook();
 
       // Call the method on each render
+      // @ts-expect-error This is OK in a test
       const result = testMethod();
 
       React.useEffect(() => {

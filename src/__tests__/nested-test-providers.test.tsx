@@ -1,12 +1,12 @@
-import React from "react";
+import React, { act } from "react";
 import "@testing-library/jest-dom/extend-expect";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import {
   reforge as globalReforge,
   ReforgeProvider,
   useReforge,
   ReforgeTestProvider,
-  TestProps,
+  ReforgeTestProviderProps,
 } from "../index";
 
 type Provider = typeof ReforgeTestProvider | typeof ReforgeProvider;
@@ -51,7 +51,7 @@ function OuterUserComponent({
   InnerProvider,
 }: {
   admin: { name: string };
-  innerTestConfig: TestProps["config"];
+  innerTestConfig: ReforgeTestProviderProps["config"];
   InnerProvider: Provider;
 }) {
   const { get, isEnabled, loading, reforge, settings } = useReforge();
@@ -62,7 +62,7 @@ function OuterUserComponent({
 
   return (
     <div data-testid="outer-wrapper" data-reforge-instance-hash={reforge.instanceHash}>
-      <h1 data-testid="outer-greeting">{get("greeting") ?? "Default"}</h1>
+      <h1 data-testid="outer-greeting">{(get("greeting") as string) ?? "Default"}</h1>
       {isEnabled("secretFeature") && (
         <button data-testid="outer-secret-feature" type="submit" title="secret-feature">
           Secret feature
@@ -75,6 +75,7 @@ function OuterUserComponent({
           config={innerTestConfig}
           /* eslint-disable-next-line react/jsx-props-no-spreading */
           {...settings}
+          apiKey={settings.apiKey!}
           contextAttributes={{ user: { email: "test@example.com" } }}
         >
           <InnerUserComponent />
@@ -89,8 +90,8 @@ function App({
   outerTestConfig,
   InnerProvider,
 }: {
-  innerTestConfig: TestProps["config"];
-  outerTestConfig: TestProps["config"];
+  innerTestConfig: ReforgeTestProviderProps["config"];
+  outerTestConfig: ReforgeTestProviderProps["config"];
   InnerProvider: Provider;
 }) {
   return (
