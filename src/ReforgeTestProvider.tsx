@@ -7,17 +7,17 @@ import {
   extractTypesafeMethods,
 } from "./ReforgeProvider";
 
-export type TestProps = {
+export type ReforgeTestProviderProps = {
   config: Record<string, any>;
   apiKey?: string;
 };
 
-function ReforgeTestProvider<T = any>({
+function ReforgeTestProvider({
   apiKey,
   config,
   children,
   ReforgeTypesafeClass: TypesafeClass,
-}: PropsWithChildren<TestProps & { ReforgeTypesafeClass?: ReforgeTypesafeClass<T> }>) {
+}: PropsWithChildren<ReforgeTestProviderProps & { ReforgeTypesafeClass?: ReforgeTypesafeClass }>) {
   const get = (key: string) => config[key];
   const getDuration = (key: string) => config[key];
   const isEnabled = (key: string) => !!get(key);
@@ -49,8 +49,8 @@ function ReforgeTestProvider<T = any>({
     };
 
     if (typesafeInstance) {
-      const methods = extractTypesafeMethods(typesafeInstance);
-      return { ...baseContext, ...methods };
+      const methods = extractTypesafeMethods(typesafeInstance as Record<string, unknown>);
+      return { ...baseContext, ...methods } as ProvidedContext;
     }
 
     return baseContext;

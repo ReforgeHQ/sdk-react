@@ -9,6 +9,7 @@ import { AppConfig, TypesafeComponent, HookComponent, typesafeTestConfig } from 
 function MyComponent() {
   const { get, isEnabled, loading, keys } = useReforge();
   const greeting = get("greeting") || "Default";
+  // @ts-expect-error This is OK in a test
   const subtitle = get("subtitle")?.actualSubtitle || "Default Subtitle";
 
   if (loading) {
@@ -17,7 +18,7 @@ function MyComponent() {
 
   return (
     <div>
-      <h1 role="alert">{greeting}</h1>
+      <h1 role="alert">{greeting.toString()}</h1>
       <h2 role="banner">{subtitle}</h2>
       {isEnabled("secretFeature") && (
         <button type="submit" title="secret-feature">
@@ -158,9 +159,22 @@ describe("createReforgeHook functionality with ReforgeTestProvider", () => {
 
     return (
       <div>
-        <h1 data-testid="custom-message">{getCustomMessage()}</h1>
-        {isCustomFeatureEnabled() && <div data-testid="custom-feature">Custom Feature Enabled</div>}
-        <div data-testid="custom-calculated-value">{calculateCustomValue(3)}</div>
+        <h1 data-testid="custom-message">
+          {
+            // @ts-expect-error This is OK in a test
+            getCustomMessage()
+          }
+        </h1>
+        {
+          // @ts-expect-error This is OK in a test
+          isCustomFeatureEnabled() && <div data-testid="custom-feature">Custom Feature Enabled</div>
+        }
+        <div data-testid="custom-calculated-value">
+          {
+            // @ts-expect-error This is OK in a test
+            calculateCustomValue(3)
+          }
+        </div>
       </div>
     );
   }
@@ -229,6 +243,7 @@ describe("createReforgeHook functionality with ReforgeTestProvider", () => {
       const { testMethod } = useSpiedHook();
 
       // Call the method on each render
+      // @ts-expect-error This is OK in a test
       const result = testMethod();
 
       React.useEffect(() => {

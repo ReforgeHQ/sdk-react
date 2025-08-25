@@ -66,9 +66,14 @@ export function HookComponent() {
 
   return (
     <div>
-      <h1 data-testid="app-name-hook">{appName}</h1>
-      <div data-testid="api-url">{apiUrl}</div>
-      <div data-testid="timeout">{calculateTimeout(2)}</div>
+      <h1 data-testid="app-name-hook">{String(appName)}</h1>
+      <div data-testid="api-url">{String(apiUrl)}</div>
+      <div data-testid="timeout">
+        {
+          // @ts-expect-error We don't care about this error in a test
+          calculateTimeout(2)
+        }
+      </div>
     </div>
   );
 }

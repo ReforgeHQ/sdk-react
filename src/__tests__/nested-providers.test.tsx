@@ -67,7 +67,7 @@ function OuterUserComponent({
       data-reforge-instance-hash={reforge.instanceHash}
       data-reforge-settings={JSON.stringify(parentProviderSettings)}
     >
-      <h1 data-testid="outer-greeting">{get("greeting") ?? "Default"}</h1>
+      <h1 data-testid="outer-greeting">{(get("greeting") as string) ?? "Default"}</h1>
       {isEnabled("secretFeature") && (
         <button data-testid="outer-secret-feature" type="submit" title="secret-feature">
           Secret feature
@@ -77,7 +77,11 @@ function OuterUserComponent({
       <div>
         <h1>You are looking at {admin.name}</h1>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <ReforgeProvider {...innerSettings} contextAttributes={innerUserContext}>
+        <ReforgeProvider
+          {...innerSettings}
+          contextAttributes={innerUserContext}
+          apiKey={innerSettings.apiKey!}
+        >
           <InnerUserComponent />
         </ReforgeProvider>
       </div>
