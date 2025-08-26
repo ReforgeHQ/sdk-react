@@ -24,16 +24,39 @@ searching through our [issues list](https://github.com/reforgehq/sdk-react/issue
 When creating a new issue, please be sure to include a **title and clear description**, as much
 relevant information as possible, and, if possible, a test case.
 
+## Dependencies
+
+- [NodeJS: v24.4.1](https://github.com/asdf-vm/asdf-nodejs)
+
+  ```sh
+   asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+   asdf install nodejs 24.4.1
+  ```
+
+- [Yarn: v4.9.2](https://yarnpkg.com/getting-started/install)
+
+  ```sh
+  npm install -g corepack
+  corepack enable
+  corepack prepare yarn@4.9.2 --activate
+  ```
+
+## Installing Package Dependencies
+
+```sh
+yarn install
+```
+
 ## Building Package
 
 ```sh
-npm install
+yarn build
 ```
 
 ## Running Tests
 
 ```sh
-npm run test
+yarn test
 ```
 
 ## Sending Pull Requests
