@@ -43,6 +43,9 @@
     "feature-flags",
     "config"
   ],
+  "dependencies": {
+    "@reforge-com/javascript": "0.*"
+  },
   "devDependencies": {
     "@reforge-com/javascript": "0.0.0-pre.2",
     "@testing-library/jest-dom": "^5.16.5",
@@ -73,7 +76,6 @@
     "typescript": "^4.7.4"
   },
   "peerDependencies": {
-    "@reforge-com/javascript": "0.*",
     "react": "^16 || ^17 || ^18 || ^19"
   }
 }
