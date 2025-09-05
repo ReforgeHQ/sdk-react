@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.0-pre.5 - 2025-09-05
+
+- Stop using private javascript sdk apis
+
 ## 0.0.0-pre.4 - 2025-09-05
 
 - Pin to pre-release of javascript sdk for now

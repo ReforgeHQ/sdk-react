@@ -288,7 +288,7 @@ function ReforgeProvider({
       contextAttributes,
       get: reforgeClient.get.bind(reforgeClient),
       getDuration: reforgeClient.getDuration.bind(reforgeClient),
-      keys: Object.keys(reforgeClient.configs),
+      keys: Object.keys(reforgeClient.extract()),
       reforge: reforgeClient,
       loading,
       settings,
