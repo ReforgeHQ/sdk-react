@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.0-pre.4 - 2025-09-05
+
+- Pin to pre-release of javascript sdk for now
+
 ## 0.0.0-pre.3 - 2025-09-05
 
 - Fix javascript sdk dependency definition
