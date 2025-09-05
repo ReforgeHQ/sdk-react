@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.0-pre.3 - 2025-09-05
+
+- Fix javascript sdk dependency definition
+
 ## 0.0.0-pre.2 - 2025-09-05
 
 - Resolve issues with TypeScript module merging of types
