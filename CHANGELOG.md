@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.0-pre.2 - 2025-09-05
+
+- Resolve issues with TypeScript module merging of types
+
 ## 0.0.0-pre.1 - 2025-08-20
 
 - Simplify type definitions and expose as overridable interfaces
