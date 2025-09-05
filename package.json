@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.9.2",
   "name": "@reforge-com/react",
-  "version": "0.0.0-pre.4",
+  "version": "0.0.0-pre.5",
   "description": "Feature Flags & Dynamic Configuration as a Service",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -44,10 +44,10 @@
     "config"
   ],
   "dependencies": {
-    "@reforge-com/javascript": "0.0.0-pre.2"
+    "@reforge-com/javascript": "0.0.0-pre.3"
   },
   "devDependencies": {
-    "@reforge-com/javascript": "0.0.0-pre.2",
+    "@reforge-com/javascript": "^0.0.0-pre.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@types/jest": "^28.1.6",
