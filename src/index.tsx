@@ -12,6 +12,8 @@ import {
   createReforgeHook,
   ReactHookConfigurationAccessor,
   ReactHookConfigurationRaw,
+  TypedReactHookConfigurationAccessor,
+  TypedReactHookConfigurationRaw,
 } from "./ReforgeProvider";
 import { ReforgeTestProvider, ReforgeTestProviderProps } from "./ReforgeTestProvider";
 
@@ -30,5 +32,7 @@ export {
   ProvidedContext,
   ReactHookConfigurationAccessor,
   ReactHookConfigurationRaw,
+  TypedReactHookConfigurationAccessor,
+  TypedReactHookConfigurationRaw,
   createReforgeHook,
 };

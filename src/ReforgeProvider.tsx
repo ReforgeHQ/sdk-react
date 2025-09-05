@@ -13,9 +13,21 @@ const { version } = require("../package.json");
 
 // @reforge-com/cli#generate will create interfaces into this namespace for React to consume
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ReactHookConfigurationRaw extends Record<string, unknown> {}
+export interface ReactHookConfigurationRaw {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ReactHookConfigurationAccessor extends Record<string, unknown> {}
+export interface ReactHookConfigurationAccessor {}
+
+export type TypedReactHookConfigurationRaw = keyof ReactHookConfigurationRaw extends never
+  ? Record<string, unknown>
+  : {
+      [TypedFlagKey in keyof ReactHookConfigurationRaw]: ReactHookConfigurationRaw[TypedFlagKey];
+    };
+
+export type TypedReactHookConfigurationAccessor = keyof ReactHookConfigurationAccessor extends never
+  ? Record<string, unknown>
+  : {
+      [TypedFlagKey in keyof ReactHookConfigurationAccessor]: ReactHookConfigurationAccessor[TypedFlagKey];
+    };
 
 type ContextValue = number | string | boolean;
 type ContextAttributes = Record<string, Record<string, ContextValue>>;
@@ -40,9 +52,9 @@ type SharedSettings = {
 
 // Extract base context without ClassMethods
 export type BaseContext = {
-  get: (
-    key: keyof ReactHookConfigurationRaw & string
-  ) => ReactHookConfigurationRaw[keyof ReactHookConfigurationRaw];
+  get: <K extends keyof TypedReactHookConfigurationRaw>(
+    key: K
+  ) => TypedReactHookConfigurationRaw[K];
   getDuration(key: string): Duration | undefined;
   contextAttributes: ContextAttributes;
   isEnabled: (key: string) => boolean;
@@ -52,7 +64,7 @@ export type BaseContext = {
   settings: SharedSettings;
 };
 
-export type ProvidedContext = BaseContext & ClassMethods<ReactHookConfigurationAccessor>;
+export type ProvidedContext = BaseContext & ClassMethods<ReforgeTypesafeClass>;
 
 export const defaultContext: BaseContext = {
   get: (_key: string) => undefined,
