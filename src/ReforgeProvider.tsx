@@ -38,7 +38,7 @@ type ClassMethods<T> = { [K in keyof T]: T[K] };
 type ReforgeTypesafeClass<T = unknown> = new (reforgeInstance: Reforge) => T;
 
 type SharedSettings = {
-  apiKey?: string;
+  sdkKey?: string;
   endpoints?: string[];
   apiEndpoint?: string;
   timeout?: number;
@@ -112,7 +112,7 @@ export const assignReforgeClient = () => {
 };
 
 export type ReforgeProviderProps = SharedSettings & {
-  apiKey: string;
+  sdkKey: string;
   contextAttributes?: ContextAttributes;
   ReforgeTypesafeClass?: ReforgeTypesafeClass<any>;
 };
@@ -167,7 +167,7 @@ export const extractTypesafeMethods = (
 };
 
 function ReforgeProvider({
-  apiKey,
+  sdkKey,
   contextAttributes = {},
   onError = (e: unknown) => {
     // eslint-disable-next-line no-console
@@ -185,7 +185,7 @@ function ReforgeProvider({
   ReforgeTypesafeClass: TypesafeClass,
 }: PropsWithChildren<ReforgeProviderProps>) {
   const settings = {
-    apiKey,
+    sdkKey,
     endpoints,
     apiEndpoint,
     timeout,
@@ -221,8 +221,8 @@ function ReforgeProvider({
       if (mostRecentlyLoadingContextKey.current === undefined) {
         mostRecentlyLoadingContextKey.current = contextKey;
 
-        if (!apiKey) {
-          throw new Error("ReforgeProvider: apiKey is required");
+        if (!sdkKey) {
+          throw new Error("ReforgeProvider: sdkKey is required");
         }
 
         const initOptions: Parameters<typeof reforgeClient.init>[0] = {
@@ -265,7 +265,7 @@ function ReforgeProvider({
       onError(e as Error);
     }
   }, [
-    apiKey,
+    sdkKey,
     loadedContextKey,
     contextKey,
     loading,

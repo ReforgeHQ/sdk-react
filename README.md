@@ -28,7 +28,7 @@ const WrappedApp = () => {
   };
 
   return (
-    <ReforgeProvider apiKey={"YOUR_API_KEY"} contextAttributes={context} onError={onError}>
+    <ReforgeProvider sdkKey={"YOUR_SDK_KEY"} contextAttributes={context} onError={onError}>
       <App />
     </ReforgeProvider>
   );
@@ -39,7 +39,7 @@ Here's an explanation of each provider prop:
 
 | property            | required | type                | purpose                                                                       |
 | ------------------- | -------- | ------------------- | ----------------------------------------------------------------------------- |
-| `apiKey`            | yes      | `string`            | your Reforge API key                                                          |
+| `sdkKey`            | yes      | `string`            | your Reforge SDK key                                                          |
 | `onError`           | no       | `(error) => void`   | callback invoked if reforge fails to initialize                               |
 | `contextAttributes` | no       | `ContextAttributes` | this is the context attributes object you passed when setting up the provider |
 | `endpoints`         | no       | `string[]`          | CDN endpoints to load configuration from (defaults to 2 reforge-based CDNs)   |

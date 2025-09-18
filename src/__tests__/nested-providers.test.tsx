@@ -15,7 +15,7 @@ enableFetchMocks();
 
 // eslint-disable-next-line no-console
 const onError = console.error;
-const apiKey = "nested-providers-test-api-key";
+const sdkKey = "nested-providers-test-sdk-key";
 
 function InnerUserComponent() {
   const { isEnabled, loading, reforge, settings } = useReforge();
@@ -80,7 +80,7 @@ function OuterUserComponent({
         <ReforgeProvider
           {...innerSettings}
           contextAttributes={innerUserContext}
-          apiKey={innerSettings.apiKey!}
+          sdkKey={innerSettings.sdkKey!}
         >
           <InnerUserComponent />
         </ReforgeProvider>
@@ -99,7 +99,7 @@ function App({
 }) {
   return (
     <ReforgeProvider
-      apiKey={apiKey}
+      sdkKey={sdkKey}
       contextAttributes={outerUserContext}
       onError={onError}
       // eslint-disable-next-line react/jsx-boolean-value
@@ -173,7 +173,7 @@ it("allows nested `ReforgeProvider`s that reuse the parent provider's settings",
 
   expect(outerReforgeWrapper.getAttribute("data-reforge-settings")).toStrictEqual(
     JSON.stringify({
-      apiKey,
+      sdkKey,
       collectEvaluationSummaries: false,
       onError,
     })
@@ -182,7 +182,7 @@ it("allows nested `ReforgeProvider`s that reuse the parent provider's settings",
   // These are all inherited
   expect(innerReforgeWrapper.getAttribute("data-reforge-settings")).toStrictEqual(
     JSON.stringify({
-      apiKey,
+      sdkKey,
       collectEvaluationSummaries: false,
       onError,
     })
@@ -224,7 +224,7 @@ it("allows nested `ReforgeProvider`s that use new settings", async () => {
   });
 
   const innerProviderSettings = {
-    apiKey: "inner-api-key",
+    sdkKey: "inner-sdk-key",
     collectLoggerNames: true,
   };
 
@@ -251,7 +251,7 @@ it("allows nested `ReforgeProvider`s that use new settings", async () => {
 
   expect(outerReforgeWrapper.getAttribute("data-reforge-settings")).toStrictEqual(
     JSON.stringify({
-      apiKey,
+      sdkKey,
       collectEvaluationSummaries: false,
       onError,
     })
@@ -260,7 +260,7 @@ it("allows nested `ReforgeProvider`s that use new settings", async () => {
   // These are NOT inherited so we get what we set on the inner provider
   expect(innerReforgeWrapper.getAttribute("data-reforge-settings")).toStrictEqual(
     JSON.stringify({
-      apiKey: "inner-api-key",
+      sdkKey: "inner-sdk-key",
       collectLoggerNames: true,
     })
   );
