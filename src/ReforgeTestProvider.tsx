@@ -9,11 +9,11 @@ import {
 
 export type ReforgeTestProviderProps = {
   config: Record<string, any>;
-  apiKey?: string;
+  sdkKey?: string;
 };
 
 function ReforgeTestProvider({
-  apiKey,
+  sdkKey,
   config,
   children,
   ReforgeTypesafeClass: TypesafeClass,
@@ -45,7 +45,7 @@ function ReforgeTestProvider({
       loading: false,
       reforge: reforgeClient,
       keys: Object.keys(config),
-      settings: { apiKey: apiKey ?? "fake-api-key-via-the-test-provider" },
+      settings: { sdkKey: sdkKey ?? "fake-sdk-key-via-the-test-provider" },
     };
 
     if (typesafeInstance) {
@@ -54,7 +54,7 @@ function ReforgeTestProvider({
     }
 
     return baseContext;
-  }, [config, reforgeClient, typesafeInstance, apiKey]);
+  }, [config, reforgeClient, typesafeInstance, sdkKey]);
 
   return <ReforgeContext.Provider value={value}>{children}</ReforgeContext.Provider>;
 }

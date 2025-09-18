@@ -69,7 +69,7 @@ describe("ReforgeProvider", () => {
     onError?: (err: Error) => void;
   }) =>
     render(
-      <ReforgeProvider apiKey="api-key" contextAttributes={contextAttributes} onError={onError}>
+      <ReforgeProvider sdkKey="sdk-key" contextAttributes={contextAttributes} onError={onError}>
         <MyComponent />
       </ReforgeProvider>
     );
@@ -181,7 +181,7 @@ describe("ReforgeProvider", () => {
     act(() => {
       rendered.rerender(
         <ReforgeProvider
-          apiKey="api-key"
+          sdkKey="sdk-key"
           contextAttributes={{ user: { email: "test@example.com" } }}
           onError={() => {}}
         >
@@ -213,7 +213,7 @@ describe("ReforgeProvider", () => {
       setContextAttributes = innerSetContextAttributes;
 
       return (
-        <ReforgeProvider apiKey="api-key" contextAttributes={contextAttributes} onError={() => {}}>
+        <ReforgeProvider sdkKey="sdk-key" contextAttributes={contextAttributes} onError={() => {}}>
           <MyComponent />
         </ReforgeProvider>
       );
@@ -252,7 +252,7 @@ describe("ReforgeProvider", () => {
 
     render(
       <ReforgeProvider
-        apiKey="api-key"
+        sdkKey="sdk-key"
         contextAttributes={context}
         afterEvaluationCallback={callback}
         onError={() => {}}
@@ -314,7 +314,7 @@ describe("ReforgeProvider with TypesafeClass", () => {
   it("makes TypesafeClass methods available through useReforgeTypesafe", async () => {
     render(
       <ReforgeProvider
-        apiKey="test-api-key"
+        sdkKey="test-sdk-key"
         contextAttributes={defaultContextAttributes}
         ReforgeTypesafeClass={AppConfig}
       >
@@ -337,7 +337,7 @@ describe("ReforgeProvider with TypesafeClass", () => {
   it("provides typesafe methods through the custom hook", async () => {
     render(
       <ReforgeProvider
-        apiKey="test-api-key"
+        sdkKey="test-sdk-key"
         contextAttributes={defaultContextAttributes}
         ReforgeTypesafeClass={AppConfig}
       >
@@ -368,7 +368,7 @@ describe("ReforgeProvider with TypesafeClass", () => {
 
     render(
       <ReforgeProvider
-        apiKey="test-api-key"
+        sdkKey="test-sdk-key"
         contextAttributes={defaultContextAttributes}
         ReforgeTypesafeClass={AppConfig}
       >
@@ -536,7 +536,7 @@ describe("createReforgeHook functionality with ReforgeProvider", () => {
   it("creates a working custom hook with createReforgeHook", async () => {
     render(
       <ReforgeProvider
-        apiKey="test-api-key"
+        sdkKey="test-sdk-key"
         ReforgeTypesafeClass={CustomFeatureFlags}
         contextAttributes={defaultContextAttributes}
       >
@@ -610,7 +610,7 @@ describe("createReforgeHook functionality with ReforgeProvider", () => {
 
     render(
       <ReforgeProvider
-        apiKey="test-api-key"
+        sdkKey="test-sdk-key"
         contextAttributes={defaultContextAttributes}
         ReforgeTypesafeClass={SpiedClass}
       >
