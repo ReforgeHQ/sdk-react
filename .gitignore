@@ -4,3 +4,4 @@ types/
 dist/
 coverage/
 *.tgz
+.envrc
