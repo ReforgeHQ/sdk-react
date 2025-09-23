@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.0-pre.6 - 2025-09-23
+
+- Properly type other key inputs to the reforge hooks
+
 ## 0.0.0-pre.5 - 2025-09-05
 
 - Stop using private javascript sdk apis
