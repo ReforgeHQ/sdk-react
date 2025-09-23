@@ -55,22 +55,22 @@ export type BaseContext = {
   get: <K extends keyof TypedReactHookConfigurationRaw>(
     key: K
   ) => TypedReactHookConfigurationRaw[K];
-  getDuration(key: string): Duration | undefined;
+  getDuration: <K extends keyof TypedReactHookConfigurationRaw>(key: K) => Duration | undefined;
   contextAttributes: ContextAttributes;
-  isEnabled: (key: string) => boolean;
+  isEnabled: <K extends keyof TypedReactHookConfigurationRaw>(key: K) => boolean;
   loading: boolean;
   reforge: typeof reforge;
-  keys: string[];
+  keys: (keyof TypedReactHookConfigurationRaw)[];
   settings: SharedSettings;
 };
 
 export type ProvidedContext = BaseContext & ClassMethods<ReforgeTypesafeClass>;
 
 export const defaultContext: BaseContext = {
-  get: (_key: string) => undefined,
-  getDuration: (_key: string) => undefined,
-  isEnabled: (_key: string) => false,
-  keys: [] as string[],
+  get: (_key) => undefined,
+  getDuration: (_key) => undefined,
+  isEnabled: (_key) => false,
+  keys: [],
   loading: true,
   contextAttributes: {},
   reforge,
