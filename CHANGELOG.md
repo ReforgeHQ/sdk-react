@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.0-pre.8 - 2025-09-24
+
+- Upgrade sdk-javascript dependency to use new reforge.com endpoints
+
 ## 0.0.0-pre.6 - 2025-09-23
 
 - Properly type other key inputs to the reforge hooks
