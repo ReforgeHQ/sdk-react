@@ -82,10 +82,28 @@ export const ReforgeContext = React.createContext<ProvidedContext>(
 );
 
 // This is a factory function that creates a fully typed useReforge hook for a specific ReforgeTypesafe class
-export function createReforgeHook<T>(_typesafeClass: ReforgeTypesafeClass<T>) {
+export function createReforgeHook<T>(TypesafeClass: ReforgeTypesafeClass<T>) {
   return function useReforgeHook(): BaseContext & T {
-    const context = React.useContext(ReforgeContext);
-    return context as BaseContext & T;
+    const baseContext = React.useContext(ReforgeContext);
+
+    // Memoize the typesafe instance to prevent unnecessary constructor calls
+    const typesafeInstance = React.useMemo(() => {
+      const instance = new TypesafeClass(baseContext.reforge);
+
+      // Copy baseContext properties to typesafeInstance except for `get`
+      Object.assign(instance as any, {
+        getDuration: baseContext.getDuration,
+        contextAttributes: baseContext.contextAttributes,
+        isEnabled: baseContext.isEnabled,
+        loading: baseContext.loading,
+        keys: baseContext.keys,
+        settings: baseContext.settings,
+      });
+
+      return instance;
+    }, [baseContext]);
+
+    return typesafeInstance as BaseContext & T;
   };
 }
 

@@ -1,36 +1,41 @@
 Changelog
 
+## 0.0.0-pre.9 - 2025-09-26
+
+- fix: Hook up `createReforgeHook` to actually use the typesafe class instance and provide access to
+  it's getter methods
+
 ## 0.0.0-pre.8 - 2025-09-24
 
-- Upgrade sdk-javascript dependency to use new reforge.com endpoints
+- feat: Upgrade sdk-javascript dependency to use new reforge.com endpoints
 
 ## 0.0.0-pre.6 - 2025-09-23
 
-- Properly type other key inputs to the reforge hooks
+- feat: Properly type other key inputs to the reforge hooks
 
 ## 0.0.0-pre.5 - 2025-09-05
 
-- Stop using private javascript sdk apis
+- feat: Stop using private javascript sdk apis
 
 ## 0.0.0-pre.4 - 2025-09-05
 
-- Pin to pre-release of javascript sdk for now
+- chore: Pin to pre-release of javascript sdk for now
 
 ## 0.0.0-pre.3 - 2025-09-05
 
-- Fix javascript sdk dependency definition
+- fix: javascript sdk dependency definition
 
 ## 0.0.0-pre.2 - 2025-09-05
 
-- Resolve issues with TypeScript module merging of types
+- fix: Resolve issues with TypeScript module merging of types
 
 ## 0.0.0-pre.1 - 2025-08-20
 
-- Simplify type definitions and expose as overridable interfaces
+- feat: Simplify type definitions and expose as overridable interfaces
 
 ## 0.0.0-pre.0 - 2025-08-04
 
-- Reforge rebrand
+- chore: Reforge rebrand
 
 # @prefab-cloud/prefab-cloud-react
 
