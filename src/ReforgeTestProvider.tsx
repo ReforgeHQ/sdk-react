@@ -1,11 +1,5 @@
 import React, { PropsWithChildren } from "react";
-import {
-  ReforgeContext,
-  assignReforgeClient,
-  ProvidedContext,
-  ReforgeTypesafeClass,
-  extractTypesafeMethods,
-} from "./ReforgeProvider";
+import { ReforgeContext, assignReforgeClient, ProvidedContext } from "./ReforgeProvider";
 
 export type ReforgeTestProviderProps = {
   config: Record<string, any>;
@@ -16,21 +10,12 @@ function ReforgeTestProvider({
   sdkKey,
   config,
   children,
-  ReforgeTypesafeClass: TypesafeClass,
-}: PropsWithChildren<ReforgeTestProviderProps & { ReforgeTypesafeClass?: ReforgeTypesafeClass }>) {
+}: PropsWithChildren<ReforgeTestProviderProps>) {
   const get = (key: string) => config[key];
   const getDuration = (key: string) => config[key];
   const isEnabled = (key: string) => !!get(key);
 
   const reforgeClient = React.useMemo(() => assignReforgeClient(), []);
-
-  // Memoize typesafe instance separately
-  const typesafeInstance = React.useMemo(() => {
-    if (TypesafeClass && reforgeClient) {
-      return new TypesafeClass(reforgeClient);
-    }
-    return null;
-  }, [TypesafeClass, reforgeClient]);
 
   const value = React.useMemo(() => {
     reforgeClient.get = get;
@@ -48,13 +33,8 @@ function ReforgeTestProvider({
       settings: { sdkKey: sdkKey ?? "fake-sdk-key-via-the-test-provider" },
     };
 
-    if (typesafeInstance) {
-      const methods = extractTypesafeMethods(typesafeInstance as Record<string, unknown>);
-      return { ...baseContext, ...methods } as ProvidedContext;
-    }
-
     return baseContext;
-  }, [config, reforgeClient, typesafeInstance, sdkKey]);
+  }, [config, reforgeClient, sdkKey]);
 
   return <ReforgeContext.Provider value={value}>{children}</ReforgeContext.Provider>;
 }

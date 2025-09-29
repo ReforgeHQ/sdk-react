@@ -4,7 +4,6 @@ import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import { Reforge } from "@reforge-com/javascript";
 import { ReforgeTestProvider, useReforge, createReforgeHook } from "../index";
-import { AppConfig, TypesafeComponent, HookComponent, typesafeTestConfig } from "./test-helpers";
 
 function MyComponent() {
   const { get, isEnabled, loading, keys } = useReforge();
@@ -84,60 +83,23 @@ describe("ReforgeTestProvider", () => {
   });
 });
 
-describe.skip("ReforgeTestProvider with TypesafeClass", () => {
-  it("makes TypesafeClass methods available in test environment", () => {
-    render(
-      <ReforgeTestProvider config={typesafeTestConfig} ReforgeTypesafeClass={AppConfig}>
-        <TypesafeComponent />
-        <HookComponent />
-      </ReforgeTestProvider>
-    );
-
-    // No need to wait for loading since ReforgeTestProvider is synchronous
-    expect(screen.getByTestId("app-name")).toHaveTextContent("Test App From TestProvider");
-    expect(screen.getByTestId("api-url")).toHaveTextContent("https://test-provider.example.com");
-    expect(screen.getByTestId("raw-theme-color")).toHaveTextContent("#00FF00");
-    expect(screen.getByTestId("feature-flag")).toBeInTheDocument();
-    expect(screen.getByTestId("timeout")).toHaveTextContent("6000"); // 3000 * 2
-  });
-
-  it("uses default values when configs are not provided in test provider", () => {
-    render(
-      <ReforgeTestProvider
-        config={{
-          // Only provide some configs
-          "app.name": "Only App Name Set",
-        }}
-        ReforgeTypesafeClass={AppConfig}
-      >
-        <TypesafeComponent />
-        <HookComponent />
-      </ReforgeTestProvider>
-    );
-
-    expect(screen.getByTestId("app-name")).toHaveTextContent("Only App Name Set");
-    expect(screen.getByTestId("api-url")).toHaveTextContent("https://api.default.com");
-    expect(screen.getByTestId("raw-theme-color")).toHaveTextContent("#000000");
-    expect(screen.queryByTestId("feature-flag")).not.toBeInTheDocument();
-    expect(screen.getByTestId("timeout")).toHaveTextContent("2000"); // 1000 (default) * 2
-  });
-});
-
 // Adding explicit tests for createReforgeHook functionality
-describe.skip("createReforgeHook functionality with ReforgeTestProvider", () => {
+describe("createReforgeHook functionality with ReforgeTestProvider", () => {
   // Custom TypesafeClass for testing
   class CustomFeatureFlags {
-    private reforge: Reforge;
-
-    constructor(reforge: Reforge) {
-      this.reforge = reforge;
+    constructor(public reforge: Reforge) {
+      this.calculateCustomValue = this.calculateCustomValue.bind(this);
     }
 
-    isCustomFeatureEnabled(): boolean {
+    get(key: string): unknown {
+      return this.reforge.get(key);
+    }
+
+    get isCustomFeatureEnabled(): boolean {
       return this.reforge.isEnabled("custom.feature");
     }
 
-    getCustomMessage(): string {
+    get getCustomMessage(): string {
       const message = this.reforge.get("custom.message");
       return typeof message === "string" ? message : "Default Message";
     }
@@ -159,22 +121,9 @@ describe.skip("createReforgeHook functionality with ReforgeTestProvider", () => 
 
     return (
       <div>
-        <h1 data-testid="custom-message">
-          {
-            // @ts-expect-error This is OK in a test
-            getCustomMessage()
-          }
-        </h1>
-        {
-          // @ts-expect-error This is OK in a test
-          isCustomFeatureEnabled() && <div data-testid="custom-feature">Custom Feature Enabled</div>
-        }
-        <div data-testid="custom-calculated-value">
-          {
-            // @ts-expect-error This is OK in a test
-            calculateCustomValue(3)
-          }
-        </div>
+        <h1 data-testid="custom-message">{getCustomMessage}</h1>
+        {isCustomFeatureEnabled && <div data-testid="custom-feature">Custom Feature Enabled</div>}
+        <div data-testid="custom-calculated-value">{calculateCustomValue(3)}</div>
       </div>
     );
   }
@@ -187,7 +136,6 @@ describe.skip("createReforgeHook functionality with ReforgeTestProvider", () => 
           "custom.feature": true,
           "custom.base.value": 10,
         }}
-        ReforgeTypesafeClass={CustomFeatureFlags}
       >
         <CustomHookComponent />
       </ReforgeTestProvider>
@@ -205,7 +153,6 @@ describe.skip("createReforgeHook functionality with ReforgeTestProvider", () => 
           // Only specify some values
           "custom.message": "Only Message Set",
         }}
-        ReforgeTypesafeClass={CustomFeatureFlags}
       >
         <CustomHookComponent />
       </ReforgeTestProvider>
@@ -222,11 +169,13 @@ describe.skip("createReforgeHook functionality with ReforgeTestProvider", () => 
     const methodSpy = jest.fn().mockReturnValue("memoized result");
 
     class SpiedClass {
-      private reforge: Reforge;
-
-      constructor(reforge: Reforge) {
+      constructor(public reforge: Reforge) {
         constructorSpy(reforge);
-        this.reforge = reforge;
+        this.testMethod = this.testMethod.bind(this);
+      }
+
+      get(key: string): unknown {
+        return this.reforge.get(key);
       }
 
       // eslint-disable-next-line class-methods-use-this
@@ -243,7 +192,6 @@ describe.skip("createReforgeHook functionality with ReforgeTestProvider", () => 
       const { testMethod } = useSpiedHook();
 
       // Call the method on each render
-      // @ts-expect-error This is OK in a test
       const result = testMethod();
 
       React.useEffect(() => {
@@ -261,7 +209,7 @@ describe.skip("createReforgeHook functionality with ReforgeTestProvider", () => 
     }
 
     render(
-      <ReforgeTestProvider config={{}} ReforgeTypesafeClass={SpiedClass}>
+      <ReforgeTestProvider config={{}}>
         <ReRenderingComponent />
       </ReforgeTestProvider>
     );

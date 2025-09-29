@@ -35,7 +35,14 @@ type EvaluationCallback = (key: string, value: ConfigValue, context: Context | u
 
 type ClassMethods<T> = { [K in keyof T]: T[K] };
 
-type ReforgeTypesafeClass<T = unknown> = new (reforgeInstance: Reforge) => T;
+interface ReforgeTypesafeInterface {
+  get<K extends keyof TypedReactHookConfigurationRaw>(key: K): TypedReactHookConfigurationRaw[K];
+  get reforge(): Reforge;
+}
+
+type ReforgeTypesafeClass<T extends ReforgeTypesafeInterface = ReforgeTypesafeInterface> = new (
+  reforgeInstance: Reforge
+) => T;
 
 type SharedSettings = {
   sdkKey?: string;
@@ -50,7 +57,6 @@ type SharedSettings = {
   collectContextMode?: CollectContextModeType;
 };
 
-// Extract base context without ClassMethods
 export type BaseContext = {
   get: <K extends keyof TypedReactHookConfigurationRaw>(
     key: K
@@ -82,7 +88,9 @@ export const ReforgeContext = React.createContext<ProvidedContext>(
 );
 
 // This is a factory function that creates a fully typed useReforge hook for a specific ReforgeTypesafe class
-export function createReforgeHook<T>(TypesafeClass: ReforgeTypesafeClass<T>) {
+export function createReforgeHook<T extends ReforgeTypesafeInterface>(
+  TypesafeClass: ReforgeTypesafeClass<T>
+) {
   return function useReforgeHook(): BaseContext & T {
     const baseContext = React.useContext(ReforgeContext);
 
@@ -90,7 +98,7 @@ export function createReforgeHook<T>(TypesafeClass: ReforgeTypesafeClass<T>) {
     const typesafeInstance = React.useMemo(() => {
       const instance = new TypesafeClass(baseContext.reforge);
 
-      // Copy baseContext properties to typesafeInstance except for `get`
+      // Copy baseContext properties to typesafeInstance except for `get` + `reforge`
       Object.assign(instance as any, {
         getDuration: baseContext.getDuration,
         contextAttributes: baseContext.contextAttributes,
@@ -110,11 +118,6 @@ export function createReforgeHook<T>(TypesafeClass: ReforgeTypesafeClass<T>) {
 // Basic hook for general use - requires type parameter
 export const useBaseReforge = () => React.useContext(ReforgeContext);
 
-// Helper hook for explicit typing
-export function useReforgeTypesafe<T>(): BaseContext & T {
-  return useBaseReforge() as BaseContext & T;
-}
-
 // General hook that returns the context with any explicit type
 export const useReforge = (): ProvidedContext => useBaseReforge() as unknown as ProvidedContext;
 
@@ -132,7 +135,6 @@ export const assignReforgeClient = () => {
 export type ReforgeProviderProps = SharedSettings & {
   sdkKey: string;
   contextAttributes?: ContextAttributes;
-  ReforgeTypesafeClass?: ReforgeTypesafeClass<any>;
 };
 
 const getContext = (
@@ -157,33 +159,6 @@ const getContext = (
   }
 };
 
-// Helper to extract methods from a TypesafeClass instance
-export const extractTypesafeMethods = (
-  instance: Record<string, unknown>
-): Record<string, unknown> => {
-  const methods: Record<string, unknown> = {};
-  const prototype = Object.getPrototypeOf(instance);
-
-  const descriptors = Object.getOwnPropertyDescriptors(prototype);
-
-  Object.keys(descriptors).forEach((key) => {
-    if (key === "constructor") return;
-
-    const descriptor = descriptors[key];
-
-    // Handle regular methods
-    if (typeof instance[key] === "function") {
-      methods[key] = (instance[key] as () => unknown).bind(instance);
-    }
-    // Handle getters - convert to regular properties
-    else if (descriptor.get) {
-      methods[key] = instance[key];
-    }
-  });
-
-  return methods;
-};
-
 function ReforgeProvider({
   sdkKey,
   contextAttributes = {},
@@ -200,7 +175,6 @@ function ReforgeProvider({
   collectEvaluationSummaries,
   collectLoggerNames,
   collectContextMode,
-  ReforgeTypesafeClass: TypesafeClass,
 }: PropsWithChildren<ReforgeProviderProps>) {
   const settings = {
     sdkKey,
@@ -292,14 +266,6 @@ function ReforgeProvider({
     reforgeClient.instanceHash,
   ]);
 
-  // Memoize typesafe instance separately
-  const typesafeInstance = React.useMemo(() => {
-    if (TypesafeClass && reforgeClient) {
-      return new TypesafeClass(reforgeClient);
-    }
-    return null;
-  }, [TypesafeClass, reforgeClient.instanceHash, loading]);
-
   const value = React.useMemo(() => {
     const baseContext: ProvidedContext = {
       isEnabled: reforgeClient.isEnabled.bind(reforgeClient),
@@ -312,13 +278,8 @@ function ReforgeProvider({
       settings,
     };
 
-    if (typesafeInstance) {
-      const methods = extractTypesafeMethods(typesafeInstance);
-      return { ...baseContext, ...methods } as ProvidedContext;
-    }
-
     return baseContext;
-  }, [loadedContextKey, loading, reforgeClient.instanceHash, settings, typesafeInstance]);
+  }, [loadedContextKey, loading, reforgeClient.instanceHash, settings]);
 
   return <ReforgeContext.Provider value={value}>{children}</ReforgeContext.Provider>;
 }

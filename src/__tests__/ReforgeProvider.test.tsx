@@ -3,20 +3,7 @@ import React, { act } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import { ContextValue, Reforge } from "@reforge-com/javascript";
-import {
-  ContextAttributes,
-  ReforgeProvider,
-  useReforge,
-  useReforgeTypesafe,
-  ReforgeTestProvider,
-  createReforgeHook,
-} from "../index";
-import {
-  AppConfig,
-  TypesafeComponent,
-  HookComponent,
-  mockEvaluationsResponse,
-} from "./test-helpers";
+import { ContextAttributes, ReforgeProvider, useReforge, createReforgeHook } from "../index";
 
 type Config = { [key: string]: any };
 
@@ -298,181 +285,25 @@ describe("ReforgeProvider", () => {
   });
 });
 
-describe.skip("ReforgeProvider with TypesafeClass", () => {
-  const defaultContextAttributes = { user: { email: "test@example.com" } };
-
-  // Mock reforge client responses for typesafe tests
-  beforeEach(() => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => mockEvaluationsResponse,
-      })
-    ) as jest.Mock;
-  });
-
-  it("makes TypesafeClass methods available through useReforgeTypesafe", async () => {
-    render(
-      <ReforgeProvider
-        sdkKey="test-sdk-key"
-        contextAttributes={defaultContextAttributes}
-        ReforgeTypesafeClass={AppConfig}
-      >
-        <TypesafeComponent />
-      </ReforgeProvider>
-    );
-
-    // Wait for loading to finish
-    await act(async () => {
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise((r) => setTimeout(r, 100));
-    });
-
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
-    expect(screen.getByTestId("app-name")).toHaveTextContent("Test App");
-    expect(screen.getByTestId("raw-theme-color")).toHaveTextContent("#FF5500");
-    expect(screen.getByTestId("feature-flag")).toBeInTheDocument();
-  });
-
-  it("provides typesafe methods through the custom hook", async () => {
-    render(
-      <ReforgeProvider
-        sdkKey="test-sdk-key"
-        contextAttributes={defaultContextAttributes}
-        ReforgeTypesafeClass={AppConfig}
-      >
-        <HookComponent />
-      </ReforgeProvider>
-    );
-
-    // Wait for loading to finish
-    await act(async () => {
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise((r) => setTimeout(r, 100));
-    });
-
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
-    expect(screen.getByTestId("app-name-hook")).toHaveTextContent("Test App");
-    expect(screen.getByTestId("api-url")).toHaveTextContent("https://api.test.com");
-    expect(screen.getByTestId("timeout")).toHaveTextContent("4000"); // 2000 * 2
-  });
-
-  it("uses default values when configs are not available", async () => {
-    // Override the mock to return empty configs
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => ({ evaluations: {} }),
-      })
-    ) as jest.Mock;
-
-    render(
-      <ReforgeProvider
-        sdkKey="test-sdk-key"
-        contextAttributes={defaultContextAttributes}
-        ReforgeTypesafeClass={AppConfig}
-      >
-        <TypesafeComponent />
-        <HookComponent />
-      </ReforgeProvider>
-    );
-
-    // Wait for loading to finish
-    await act(async () => {
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise((r) => setTimeout(r, 100));
-    });
-
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
-    expect(screen.getByTestId("app-name")).toHaveTextContent("Default App");
-    expect(screen.getByTestId("timeout")).toHaveTextContent("2000"); // 1000 * 2 (default)
-    expect(screen.queryByTestId("feature-flag")).not.toBeInTheDocument();
-  });
-});
-
-describe("TypesafeClass instance memoization", () => {
-  it("memoizes the TypesafeClass instance across renders", async () => {
-    // Create a mocked version of our TypesafeClass with constructor and method spies
-    const constructorSpy = jest.fn();
-    const methodSpy = jest.fn();
-
-    class TrackedAppConfig {
-      constructor(reforge: Reforge) {
-        constructorSpy(reforge);
-        this.reforge = reforge;
-      }
-
-      private reforge: Reforge;
-
-      appName(): string {
-        methodSpy();
-        const name = this.reforge.get("app.name");
-        return typeof name === "string" ? name : "Default App";
-      }
-    }
-
-    // Component that forces re-renders and tracks calls
-    function ReRenderingComponent() {
-      const [counter, setCounter] = React.useState(0);
-      const { appName } = useReforgeTypesafe<TrackedAppConfig>();
-
-      // Force a re-render after mounting
-      React.useEffect(() => {
-        if (counter < 3) {
-          setTimeout(() => setCounter(counter + 1), 10);
-        }
-      }, [counter]);
-
-      return (
-        <div data-testid="counter">
-          {
-            // @ts-expect-error This is OK in a test
-            appName()
-          }{" "}
-          (Render count: {counter})
-        </div>
-      );
-    }
-
-    render(
-      <ReforgeTestProvider
-        config={{
-          "app.name": "Memoization Test",
-        }}
-        ReforgeTypesafeClass={TrackedAppConfig}
-      >
-        <ReRenderingComponent />
-      </ReforgeTestProvider>
-    );
-
-    // Wait for all re-renders to complete
-    await waitFor(() => {
-      expect(screen.getByTestId("counter")).toHaveTextContent("(Render count: 3)");
-    });
-
-    // Constructor should only be called once, but the method should be called for each render
-    expect(constructorSpy).toHaveBeenCalledTimes(1);
-    expect(methodSpy).toHaveBeenCalledTimes(4);
-  });
-});
-
 // Adding explicit tests for createReforgeHook functionality
-describe.skip("createReforgeHook functionality with ReforgeProvider", () => {
+describe("createReforgeHook functionality with ReforgeProvider", () => {
   const defaultContextAttributes = { user: { email: "test@example.com" } };
 
   // Create a custom TypesafeClass for testing
   class CustomFeatureFlags {
-    private reforge: Reforge;
-
-    constructor(reforge: Reforge) {
-      this.reforge = reforge;
+    constructor(public reforge: Reforge) {
+      this.calculateValue = this.calculateValue.bind(this);
     }
 
-    isSecretFeatureEnabled(): boolean {
+    get(key: string): unknown {
+      return this.reforge.get(key);
+    }
+
+    get isSecretFeatureEnabled(): boolean {
       return this.reforge.isEnabled("secret.feature");
     }
 
-    getGreeting(): string {
+    get getGreeting(): string {
       const greeting = this.reforge.get("greeting");
       return typeof greeting === "string" ? greeting : "Default Greeting";
     }
@@ -498,22 +329,9 @@ describe.skip("createReforgeHook functionality with ReforgeProvider", () => {
 
     return (
       <div>
-        <h1 data-testid="custom-greeting">
-          {
-            // @ts-expect-error This is OK in a test
-            getGreeting()
-          }
-        </h1>
-        {
-          // @ts-expect-error This is OK in a test
-          isSecretFeatureEnabled() && <div data-testid="custom-feature">Secret Feature Enabled</div>
-        }
-        <div data-testid="calculated-value">
-          {
-            // @ts-expect-error This is OK in a test
-            calculateValue(5)
-          }
-        </div>
+        <h1 data-testid="custom-greeting">{getGreeting}</h1>
+        {isSecretFeatureEnabled && <div data-testid="custom-feature">Secret Feature Enabled</div>}
+        <div data-testid="calculated-value">{calculateValue(5)}</div>
       </div>
     );
   }
@@ -535,11 +353,7 @@ describe.skip("createReforgeHook functionality with ReforgeProvider", () => {
 
   it("creates a working custom hook with createReforgeHook", async () => {
     render(
-      <ReforgeProvider
-        sdkKey="test-sdk-key"
-        ReforgeTypesafeClass={CustomFeatureFlags}
-        contextAttributes={defaultContextAttributes}
-      >
+      <ReforgeProvider sdkKey="test-sdk-key" contextAttributes={defaultContextAttributes}>
         <CustomHookComponent />
       </ReforgeProvider>
     );
@@ -562,11 +376,12 @@ describe.skip("createReforgeHook functionality with ReforgeProvider", () => {
     const methodSpy = jest.fn().mockReturnValue("test result");
 
     class SpiedClass {
-      private reforge: Reforge;
-
-      constructor(reforge: Reforge) {
+      constructor(public reforge: Reforge) {
         constructorSpy(reforge);
-        this.reforge = reforge;
+      }
+
+      get(key: string): unknown {
+        return this.reforge.get(key);
       }
 
       // eslint-disable-next-line class-methods-use-this
@@ -583,7 +398,6 @@ describe.skip("createReforgeHook functionality with ReforgeProvider", () => {
       const { testMethod } = useSpiedHook();
 
       // Call the method on each render
-      // @ts-expect-error This is OK in a test
       const result = testMethod();
 
       React.useEffect(() => {
@@ -609,11 +423,7 @@ describe.skip("createReforgeHook functionality with ReforgeProvider", () => {
     ) as jest.Mock;
 
     render(
-      <ReforgeProvider
-        sdkKey="test-sdk-key"
-        contextAttributes={defaultContextAttributes}
-        ReforgeTypesafeClass={SpiedClass}
-      >
+      <ReforgeProvider sdkKey="test-sdk-key" contextAttributes={defaultContextAttributes}>
         <ReRenderingComponent />
       </ReforgeProvider>
     );

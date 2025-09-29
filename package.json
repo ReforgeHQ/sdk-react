@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.9.2",
   "name": "@reforge-com/react",
-  "version": "0.0.0-pre.9",
+  "version": "0.0.0-pre.10",
   "description": "Feature Flags & Dynamic Configuration as a Service",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",

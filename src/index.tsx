@@ -2,7 +2,6 @@ import { reforge } from "@reforge-com/javascript";
 import {
   ReforgeProvider,
   useReforge,
-  useReforgeTypesafe,
   ConfigValue,
   ContextAttributes,
   SharedSettings,
@@ -21,7 +20,6 @@ export {
   ReforgeProvider,
   ReforgeTestProvider,
   useReforge,
-  useReforgeTypesafe,
   ReforgeTestProviderProps,
   ReforgeProviderProps,
   ConfigValue,

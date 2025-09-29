@@ -1,6 +1,6 @@
 import React from "react";
 import { Reforge } from "@reforge-com/javascript";
-import { useReforgeTypesafe, createReforgeHook } from "../index";
+import { createReforgeHook } from "../index";
 
 // Simple TypesafeClass for testing
 export class AppConfig {
@@ -38,23 +38,6 @@ export class AppConfig {
 
 // Create a typed hook for our test class
 export const useAppConfig = createReforgeHook(AppConfig);
-
-// Component using the TypesafeClass
-export function TypesafeComponent() {
-  const { myCoolFeature, appName, themeColor, loading } = useReforgeTypesafe<AppConfig>();
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div>
-      <h1 data-testid="app-name">{appName}</h1>
-      <div data-testid="raw-theme-color">{themeColor}</div>
-      {myCoolFeature && <div data-testid="feature-flag">Feature Enabled</div>}
-    </div>
-  );
-}
 
 // Component using the custom typed hook
 export function HookComponent() {
