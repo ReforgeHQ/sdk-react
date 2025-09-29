@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.0-pre.10 - 2025-09-29
+
+- chore: remove old typesafe implementation + tighten typesafe class interface requirements
+
 ## 0.0.0-pre.9 - 2025-09-26
 
 - fix: Hook up `createReforgeHook` to actually use the typesafe class instance and provide access to
