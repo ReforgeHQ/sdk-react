@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.0-pre.11 - 2025-09-30
+
+- feat: use type gen / types from sdk-javscript
+
 ## 0.0.0-pre.10 - 2025-09-29
 
 - chore: remove old typesafe implementation + tighten typesafe class interface requirements

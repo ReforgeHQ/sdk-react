@@ -2,8 +2,8 @@
 import React, { act } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
-import { ContextValue, Reforge } from "@reforge-com/javascript";
-import { ContextAttributes, ReforgeProvider, useReforge, createReforgeHook } from "../index";
+import { ContextValue, Reforge, Contexts } from "@reforge-com/javascript";
+import { ReforgeProvider, useReforge, createReforgeHook } from "../index";
 
 type Config = { [key: string]: any };
 
@@ -187,14 +187,14 @@ describe("ReforgeProvider", () => {
   });
 
   it("re-fetches when you update the contextAttributes prop on the provider", async () => {
-    let setContextAttributes: (attributes: ContextAttributes) => void = () => {
+    let setContextAttributes: (attributes: Contexts) => void = () => {
       // eslint-disable-next-line no-console
       console.warn("setContextAttributes not set");
     };
 
     const promise = stubConfig({ greeting: { value: { string: "CUSTOM" } } });
 
-    function Wrapper({ context }: { context: ContextAttributes }) {
+    function Wrapper({ context }: { context: Contexts }) {
       const [contextAttributes, innerSetContextAttributes] = React.useState(context);
 
       setContextAttributes = innerSetContextAttributes;

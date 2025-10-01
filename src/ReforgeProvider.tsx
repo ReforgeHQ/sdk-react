@@ -1,11 +1,14 @@
 import React, { PropsWithChildren } from "react";
 import {
   reforge,
-  type CollectContextModeType,
+  type ReforgeInitParams,
   type ConfigValue,
+  type Contexts,
   Context,
-  type Duration,
   Reforge,
+  TypedFrontEndConfigurationRaw,
+  FrontEndConfigurationRaw,
+  Duration,
 } from "@reforge-com/javascript";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -13,60 +16,71 @@ const { version } = require("../package.json");
 
 // @reforge-com/cli#generate will create interfaces into this namespace for React to consume
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ReactHookConfigurationRaw {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ReactHookConfigurationAccessor {}
+export interface FrontEndConfigurationAccessor {}
 
-export type TypedReactHookConfigurationRaw = keyof ReactHookConfigurationRaw extends never
+export type TypedFrontEndConfigurationAccessor = keyof FrontEndConfigurationAccessor extends never
   ? Record<string, unknown>
   : {
-      [TypedFlagKey in keyof ReactHookConfigurationRaw]: ReactHookConfigurationRaw[TypedFlagKey];
+      [TypedFlagKey in keyof FrontEndConfigurationAccessor]: FrontEndConfigurationAccessor[TypedFlagKey];
     };
-
-export type TypedReactHookConfigurationAccessor = keyof ReactHookConfigurationAccessor extends never
-  ? Record<string, unknown>
-  : {
-      [TypedFlagKey in keyof ReactHookConfigurationAccessor]: ReactHookConfigurationAccessor[TypedFlagKey];
-    };
-
-type ContextValue = number | string | boolean;
-type ContextAttributes = Record<string, Record<string, ContextValue>>;
-type EvaluationCallback = (key: string, value: ConfigValue, context: Context | undefined) => void;
 
 type ClassMethods<T> = { [K in keyof T]: T[K] };
 
-interface ReforgeTypesafeInterface {
-  get<K extends keyof TypedReactHookConfigurationRaw>(key: K): TypedReactHookConfigurationRaw[K];
-  get reforge(): Reforge;
-}
-
-type ReforgeTypesafeClass<T extends ReforgeTypesafeInterface = ReforgeTypesafeInterface> = new (
-  reforgeInstance: Reforge
+type ReforgeTypesafeClass<T = unknown> = new (
+  // eslint-disable-next-line no-shadow
+  reforge: Reforge
 ) => T;
 
-type SharedSettings = {
-  sdkKey?: string;
-  endpoints?: string[];
-  apiEndpoint?: string;
-  timeout?: number;
+type SharedSettings = Partial<
+  Pick<
+    ReforgeInitParams,
+    | "sdkKey"
+    | "endpoints"
+    | "apiEndpoint"
+    | "timeout"
+    | "collectEvaluationSummaries"
+    | "collectLoggerNames"
+    | "collectContextMode"
+  >
+> & {
+  // We need to redefine the afterEvaluationCallback type to ensure proper dynamic resolution of K
+  afterEvaluationCallback?: <K extends keyof TypedFrontEndConfigurationRaw>(
+    key: K,
+    value: TypedFrontEndConfigurationRaw[K],
+    context: Context | undefined
+  ) => void;
   pollInterval?: number;
   onError?: (error: Error) => void;
-  afterEvaluationCallback?: EvaluationCallback;
-  collectEvaluationSummaries?: boolean;
-  collectLoggerNames?: boolean;
-  collectContextMode?: CollectContextModeType;
 };
 
 export type BaseContext = {
-  get: <K extends keyof TypedReactHookConfigurationRaw>(
+  get: <K extends keyof TypedFrontEndConfigurationRaw>(key: K) => TypedFrontEndConfigurationRaw[K];
+  getDuration: <
+    K extends keyof FrontEndConfigurationRaw extends never
+      ? string
+      : {
+          [IK in keyof TypedFrontEndConfigurationRaw]: TypedFrontEndConfigurationRaw[IK] extends Duration
+            ? IK
+            : never;
+        }[keyof TypedFrontEndConfigurationRaw],
+  >(
     key: K
-  ) => TypedReactHookConfigurationRaw[K];
-  getDuration: <K extends keyof TypedReactHookConfigurationRaw>(key: K) => Duration | undefined;
-  contextAttributes: ContextAttributes;
-  isEnabled: <K extends keyof TypedReactHookConfigurationRaw>(key: K) => boolean;
+  ) => Duration | undefined;
+  contextAttributes: Contexts;
+  isEnabled: <
+    K extends keyof FrontEndConfigurationRaw extends never
+      ? string
+      : {
+          [IK in keyof TypedFrontEndConfigurationRaw]: TypedFrontEndConfigurationRaw[IK] extends boolean
+            ? IK
+            : never;
+        }[keyof TypedFrontEndConfigurationRaw],
+  >(
+    key: K
+  ) => boolean;
   loading: boolean;
   reforge: typeof reforge;
-  keys: (keyof TypedReactHookConfigurationRaw)[];
+  keys: (keyof TypedFrontEndConfigurationRaw)[];
   settings: SharedSettings;
 };
 
@@ -88,9 +102,7 @@ export const ReforgeContext = React.createContext<ProvidedContext>(
 );
 
 // This is a factory function that creates a fully typed useReforge hook for a specific ReforgeTypesafe class
-export function createReforgeHook<T extends ReforgeTypesafeInterface>(
-  TypesafeClass: ReforgeTypesafeClass<T>
-) {
+export function createReforgeHook<T>(TypesafeClass: ReforgeTypesafeClass<T>) {
   return function useReforgeHook(): BaseContext & T {
     const baseContext = React.useContext(ReforgeContext);
 
@@ -134,11 +146,11 @@ export const assignReforgeClient = () => {
 
 export type ReforgeProviderProps = SharedSettings & {
   sdkKey: string;
-  contextAttributes?: ContextAttributes;
+  contextAttributes?: Contexts;
 };
 
 const getContext = (
-  contextAttributes: ContextAttributes,
+  contextAttributes: Contexts,
   onError: (e: Error) => void
 ): [Context, string] => {
   try {
@@ -284,4 +296,4 @@ function ReforgeProvider({
   return <ReforgeContext.Provider value={value}>{children}</ReforgeContext.Provider>;
 }
 
-export { ReforgeProvider, ConfigValue, ContextAttributes, SharedSettings, ReforgeTypesafeClass };
+export { ReforgeProvider, ConfigValue, SharedSettings, ReforgeTypesafeClass };

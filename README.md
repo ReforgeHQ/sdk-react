@@ -37,14 +37,14 @@ const WrappedApp = () => {
 
 Here's an explanation of each provider prop:
 
-| property            | required | type                | purpose                                                                       |
-| ------------------- | -------- | ------------------- | ----------------------------------------------------------------------------- |
-| `sdkKey`            | yes      | `string`            | your Reforge SDK key                                                          |
-| `onError`           | no       | `(error) => void`   | callback invoked if reforge fails to initialize                               |
-| `contextAttributes` | no       | `ContextAttributes` | this is the context attributes object you passed when setting up the provider |
-| `endpoints`         | no       | `string[]`          | CDN endpoints to load configuration from (defaults to 2 reforge-based CDNs)   |
-| `timeout`           | no       | `number`            | initialization timeout (defaults to 10 seconds)                               |
-| `pollInterval`      | no       | `number`            | configures reforge to poll for updates every `pollInterval` ms.               |
+| property            | required | type              | purpose                                                                       |
+| ------------------- | -------- | ----------------- | ----------------------------------------------------------------------------- |
+| `sdkKey`            | yes      | `string`          | your Reforge SDK key                                                          |
+| `onError`           | no       | `(error) => void` | callback invoked if reforge fails to initialize                               |
+| `contextAttributes` | no       | `Contexts`        | this is the context attributes object you passed when setting up the provider |
+| `endpoints`         | no       | `string[]`        | CDN endpoints to load configuration from (defaults to 2 reforge-based CDNs)   |
+| `timeout`           | no       | `number`          | initialization timeout (defaults to 10 seconds)                               |
+| `pollInterval`      | no       | `number`          | configures reforge to poll for updates every `pollInterval` ms.               |
 
 ### Usage in Your Components
 
