@@ -1,15 +1,9 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import { render, screen } from "@testing-library/react";
-import { Context as ReforgeContext } from "@reforge-com/javascript";
+import { Context as ReforgeContext, Contexts } from "@reforge-com/javascript";
 import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
-import {
-  reforge as globalReforge,
-  ReforgeProvider,
-  useReforge,
-  ContextAttributes,
-  SharedSettings,
-} from "../index";
+import { reforge as globalReforge, ReforgeProvider, useReforge, SharedSettings } from "../index";
 
 enableFetchMocks();
 
@@ -46,7 +40,7 @@ function OuterUserComponent({
   innerUserContext,
 }: {
   admin: { name: string };
-  innerUserContext: ContextAttributes;
+  innerUserContext: Contexts;
   innerProviderSettings: SharedSettings;
 }) {
   const { get, isEnabled, loading, reforge, settings: parentProviderSettings } = useReforge();
@@ -93,8 +87,8 @@ function App({
   innerUserContext,
   innerProviderSettings,
 }: {
-  outerUserContext: ContextAttributes;
-  innerUserContext: ContextAttributes;
+  outerUserContext: Contexts;
+  innerUserContext: Contexts;
   innerProviderSettings?: SharedSettings;
 }) {
   return (
