@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.0-pre.12 - 2025-10-01
+
+- fix: reference Contexts as a type, not a runtime value
+
 ## 0.0.0-pre.11 - 2025-09-30
 
 - feat: use type gen / types from sdk-javscript

@@ -1,4 +1,4 @@
-import { reforge, Contexts } from "@reforge-com/javascript";
+import { reforge, type Contexts } from "@reforge-com/javascript";
 import {
   ReforgeProvider,
   useReforge,
