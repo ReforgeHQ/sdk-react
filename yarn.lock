@@ -1083,12 +1083,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reforge-com/javascript@npm:0.0.0-pre.6":
-  version: 0.0.0-pre.6
-  resolution: "@reforge-com/javascript@npm:0.0.0-pre.6"
+"@reforge-com/javascript@npm:^0":
+  version: 0.0.1
+  resolution: "@reforge-com/javascript@npm:0.0.1"
   dependencies:
     uuid: "npm:^9.0.1"
-  checksum: 10c0/8de7d6d992cb836a801497fe6a83d07468892ace0a51d72f27acc011e41a5ead5e4afa50b352e1ae7e29ef674e95f0738ea6383db285b0f042852d88edcc4f93
+  checksum: 10c0/a57510949fe01a33b75bff8ed97026757ca2e675c32644d0a7cfd1b92e9a5feeeaad5ba4254c7dd9acf56c37cd11980a0b61afd891cc0a50821a55c7d3e05972
   languageName: node
   linkType: hard
 
@@ -1096,7 +1096,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@reforge-com/react@workspace:."
   dependencies:
-    "@reforge-com/javascript": "npm:0.0.0-pre.6"
+    "@reforge-com/javascript": "npm:^0"
     "@testing-library/jest-dom": "npm:^5.16.5"
     "@testing-library/react": "npm:^13.3.0"
     "@types/jest": "npm:^28.1.6"
