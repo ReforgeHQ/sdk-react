@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.1 - 2025-10-01
+
+- Official patch release
+
 ## 0.0.0-pre.12 - 2025-10-01
 
 - fix: reference Contexts as a type, not a runtime value
