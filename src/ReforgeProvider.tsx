@@ -147,6 +147,7 @@ export const assignReforgeClient = () => {
 export type ReforgeProviderProps = SharedSettings & {
   sdkKey: string;
   contextAttributes?: Contexts;
+  initialFlags?: Record<string, unknown>;
 };
 
 const getContext = (
@@ -178,6 +179,7 @@ function ReforgeProvider({
     // eslint-disable-next-line no-console
     console.error(e);
   },
+  initialFlags,
   children,
   timeout,
   endpoints,
@@ -207,6 +209,7 @@ function ReforgeProvider({
   // We use this state to pass the loading state to the Provider (updating
   // currentLoadingContextKey won't trigger an update)
   const [loading, setLoading] = React.useState(true);
+  const [initialLoad, setInitialLoad] = React.useState(true);
   // Here we track the current identity so we can reload our config when it
   // changes
   const [loadedContextKey, setLoadedContextKey] = React.useState("");
@@ -215,7 +218,22 @@ function ReforgeProvider({
 
   const [context, contextKey] = getContext(contextAttributes, onError);
 
+  if (initialFlags && initialLoad) {
+    reforgeClient.hydrate(initialFlags);
+    setInitialLoad(false);
+    setLoadedContextKey(contextKey);
+    setLoading(false);
+    mostRecentlyLoadingContextKey.current = contextKey;
+
+    if (pollInterval) {
+      // eslint-disable-next-line no-console
+      console.warn("Polling is not supported when hydrating flags via initialFlags");
+    }
+  }
+
   React.useEffect(() => {
+    setInitialLoad(false);
+
     if (mostRecentlyLoadingContextKey.current === contextKey) {
       return;
     }

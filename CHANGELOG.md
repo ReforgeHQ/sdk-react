@@ -1,5 +1,9 @@
 Changelog
 
+## 0.0.2 - 2025-10-12
+
+- Support re-hydration of flags via ReforgeProvider
+
 ## 0.0.1 - 2025-10-01
 
 - Official patch release

@@ -1124,6 +1124,7 @@ __metadata:
     tsup: "npm:^8.4.0"
     typescript: "npm:^4.7.4"
   peerDependencies:
+    "@reforge-com/javascript": ^0
     react: ^16 || ^17 || ^18 || ^19
   languageName: unknown
   linkType: soft
