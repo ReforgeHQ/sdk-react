@@ -63,7 +63,7 @@ jobs:
       - name: enable corepack
         run: |
           corepack enable
-          corepack prepare yarn@4.9.2 --activate
+          corepack prepare yarn@4.11.0 --activate
       - name: cache yarn dependencies
         uses: actions/cache@v4
         with:
@@ -76,9 +76,9 @@ jobs:
       - name: Publish to npm
         run: |
           if [ "${{ needs.check-version.outputs.is-prerelease }}" == "true" ]; then
-            yarn npm publish --provenance --access public --tag ${{ needs.check-version.outputs.npm-tag }}
+            yarn npm publish --access public --tag ${{ needs.check-version.outputs.npm-tag }}
           else
-            yarn npm publish --provenance --access public
+            yarn npm publish --access public
           fi
 
   create-release:
