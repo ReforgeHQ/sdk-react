@@ -237,7 +237,7 @@ describe("ReforgeProvider", () => {
     expect(updatedAlert).toHaveTextContent("UPDATED FROM CONTEXT");
   });
 
-  it.only("shows pre-hydrated flags without making a request", () => {
+  it("shows pre-hydrated flags without making a request", () => {
     const context = { user: { email: "test@example.com" } };
 
     // Mock the fetch response to return nothing
